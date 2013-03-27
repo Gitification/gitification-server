@@ -22,12 +22,12 @@ var gitification = require('../lib/gitification.js');
     test.ifError(value)
 */
 
-exports['awesome'] = {
-  setUp: function(done) {
+exports.awesome = {
+  setUp: function (done) {
     // setup here
     done();
   },
-  'no args': function(test) {
+  'no args': function (test) {
     test.expect(1);
     // tests here
     test.equal(gitification.awesome(), 'awesome', 'should be awesome.');
