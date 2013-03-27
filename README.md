@@ -1,4 +1,27 @@
-gitification-server
-===================
+# gitification [![Build Status](https://secure.travis-ci.org/Gitification/gitification.png?branch=master)](http://travis-ci.org/papaux/gitification)
 
-Gitification's project server
+Gamification project for OSF course.
+
+## Getting Started
+Install the module with: `npm install gitification`
+
+```javascript
+var gitification = require('gitification');
+gitification.awesome(); // "awesome"
+```
+
+## Documentation
+_(Coming soon)_
+
+## Examples
+_(Coming soon)_
+
+## Contributing
+In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
+
+## Release History
+_(Nothing yet)_
+
+## License
+Copyright (c) 2013 Vincent Pasquier  
+Licensed under the MIT license.

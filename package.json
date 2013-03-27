@@ -1,0 +1,38 @@
+{
+  "name": "gitification",
+  "description": "Gamification project for OSF course.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/Gitification/gitification",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gitification/gitification-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gitification/gitification-server/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/papaux/gitification/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/gitification",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt": "~0.4.1"
+  },
+  "keywords": ["angular", "restify", "node", "riak", "bootstrap", "school"],
+  "version": "0.0.1",
+  "dependencies": {
+    "riak-js":">= 0.9.0",
+    "restify":">= 2.2.0"
+  }
+}
