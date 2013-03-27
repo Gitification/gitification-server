@@ -1,4 +1,4 @@
-# gitification [![Build Status](https://secure.travis-ci.org/Gitification/gitification.png?branch=master)](http://travis-ci.org/papaux/gitification)
+# gitification [![Build Status](https://secure.travis-ci.org/Gitification/gitification-server.png?branch=master)](http://travis-ci.org/Gitification/gitification-server)
 
 Gamification project for OSF course.
 
