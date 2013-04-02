@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////////////////////
 ////// Users
 ////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +12,6 @@ exports.findAll = function (req, res, next) {
 			lastname:"papaux",
 			email:"geoffrey.papaux@master.hes-so.ch"
 		}
-
 	]);
 }
 
@@ -21,27 +19,27 @@ exports.findAll = function (req, res, next) {
 
 
 exports.findById = function (req, res, next) {
+	var userid = req.params.userid;
+
 	res.send({
-		user:
-		{
-			user_id: req.params.userid,
-			login:"gpap",
-			firstname:"geoffrey",
-			lastname:"papaux",
-			email:"geoffrey.papaux@master.hes-so.ch"
-		}
+		user_id: userid,
+		login:"gpap",
+		firstname:"geoffrey",
+		lastname:"papaux",
+		email:"geoffrey.papaux@master.hes-so.ch"
 	});
 }
 
 
 exports.findBadgesById = function (req, res, next) {
-	res.send({
+	var userid = req.params.userid;
 
-		user_id:1, 
+	res.send({
+		user_id:userid, 
 		badges_list:
 		[
 			{
-				badge_name:"mother fucker"
+				badge_name:"super hero"
 			}
 		]
 
@@ -53,18 +51,40 @@ exports.findBadgesById = function (req, res, next) {
 exports.create = function (req, res, next) {
 
 	res.send({
-
 		code:"success",
 		message:"Successfully added",
 		payload:
 		{
-                        user_id:1,
-                        login:"gpap",
-                        firstname:"geoffrey",
-                        lastname:"papaux",
-                        email:"geoffrey.papaux@master.hes-so.ch"
+			user_id:1,
+			login:"gpap",
+			firstname:"geoffrey",
+			lastname:"papaux",
+			email:"geoffrey.papaux@master.hes-so.ch"
 		}
+	});
+}
+
+					
+
+exports.update = function (req, res, next) {
+
+	var userid = req.params.userid;
+
+	res.send({
+		code:"success", 
+		message:"User was updated." 
+	});
+}
+
+
+
+
+exports.remove = function (req, res, next) {
+
+	var userid = req.params.userid;
+	res.send({
+		code:"success",
+		message:"User was deleted."
 
 	});
-
 }

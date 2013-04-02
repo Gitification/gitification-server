@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////////////////////////////////
 //// Applications
 ////////////////////////////////////////////////////////////////////////////////////
@@ -26,20 +25,17 @@ exports.findAll = function (req, res, next) {
 
 exports.findById = function (req, res, next) {
 	res.send({
-		application:
+		application_id: req.params.appid,
+		site:"sample",
+		callback:"callback",
+		created_at:"20130327",
+		admin:"admin",
+		statistics:
 		{
-			application_id: req.params.appid,
-			site:"sample",
-			callback:"callback",
-			created_at:"20130327",
-			admin:"admin",
-			statistics:
-			{
-				user_count:1,
-				event_count:1,
-				badge_count:1,
-				rule_count:1
-			}
+			user_count:1,
+			event_count:1,
+			badge_count:1,
+			rule_count:1
 		}
 	});
 }
