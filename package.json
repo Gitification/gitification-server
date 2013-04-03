@@ -33,6 +33,7 @@
   "version": "0.0.1",
   "dependencies": {
     "riak-js":">= 0.9.0",
-    "restify":">= 2.2.0"
+    "restify":">= 2.2.0",
+    "rewire":">=1.1.2"
   }
 }
