@@ -11,6 +11,13 @@ exports.findAll = function (req, res, next) {
 			firstname:"geoffrey",
 			lastname:"papaux",
 			email:"geoffrey.papaux@master.hes-so.ch"
+		},
+		{
+			"user_id":2,
+			"login":"vgri",
+			"firstname":"Vincent",
+			"lastname":"Grivel",
+			"email":"vincent.grivel@master.hes-so.ch"
 		}
 	]);
 }
