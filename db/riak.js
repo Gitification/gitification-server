@@ -5,7 +5,7 @@
  *						Dorian Gambin, Geoffrey Papaux
  *
  * Purpose :	Implementation of the database functions using
- *						querying the mongo db
+ *						querying the riak db
  *
  *********************************************************/
 'use strict';
