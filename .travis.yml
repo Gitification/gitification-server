@@ -6,4 +6,7 @@ before_script:
   - npm install -g grunt-cli
 notifications:
   email:
-  - 'vincent.pasquier@gmail.com'
+  - 'vincent.pasquier+osf@gmail.com'
+  - 'vgrivel+osf@gmail.com'
+  - 'geoffrey.papaux+osf@gmail.com'
+  - 'doriangambin+osf@gmail.com'

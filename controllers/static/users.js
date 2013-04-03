@@ -1,97 +1,84 @@
 ////////////////////////////////////////////////////////////////////////////////////
 ////// Users
 ////////////////////////////////////////////////////////////////////////////////////
+'use strict';
 
-
-exports.findAll = function (req, res, next) {
+exports.findAll = function (req, res/*, next*/) {
 	res.send([
 		{
-			user_id:1,
-			login:"gpap",
-			firstname:"geoffrey",
-			lastname:"papaux",
-			email:"geoffrey.papaux@master.hes-so.ch"
+			user_id: 1,
+			login: "gpap",
+			firstname: "geoffrey",
+			lastname: "papaux",
+			email: "geoffrey.papaux@master.hes-so.ch"
 		},
 		{
-			"user_id":2,
-			"login":"vgri",
-			"firstname":"Vincent",
-			"lastname":"Grivel",
-			"email":"vincent.grivel@master.hes-so.ch"
+			"user_id": 2,
+			"login": "vgri",
+			"firstname": "Vincent",
+			"lastname": "Grivel",
+			"email": "vincent.grivel@master.hes-so.ch"
 		}
 	]);
-}
+};
 
+exports.findById = function (req, res/*, next*/) {
+	var userid = req.params.userid;
 
+	res.send({
+		user_id:  userid,
+		login: "gpap",
+		firstname: "geoffrey",
+		lastname: "papaux",
+		email: "geoffrey.papaux@master.hes-so.ch"
+	});
+};
 
-
-exports.findById = function (req, res, next) {
+exports.findBadgesById = function (req, res/*, next*/) {
 	var userid = req.params.userid;
 
 	res.send({
 		user_id: userid,
-		login:"gpap",
-		firstname:"geoffrey",
-		lastname:"papaux",
-		email:"geoffrey.papaux@master.hes-so.ch"
-	});
-}
-
-
-exports.findBadgesById = function (req, res, next) {
-	var userid = req.params.userid;
-
-	res.send({
-		user_id:userid, 
 		badges_list:
 		[
 			{
-				badge_name:"super hero"
+				badge_name: "super hero"
 			}
 		]
 
 	});
-}
+};
 
-
-
-exports.create = function (req, res, next) {
+exports.create = function (req, res/*, next*/) {
 
 	res.send({
-		code:"success",
-		message:"Successfully added",
+		code: "success",
+		message: "Successfully added",
 		payload:
 		{
-			user_id:1,
-			login:"gpap",
-			firstname:"geoffrey",
-			lastname:"papaux",
-			email:"geoffrey.papaux@master.hes-so.ch"
+			user_id: 1,
+			login: "gpap",
+			firstname: "geoffrey",
+			lastname: "papaux",
+			email: "geoffrey.papaux@master.hes-so.ch"
 		}
 	});
-}
+};
 
-					
-
-exports.update = function (req, res, next) {
-
-	var userid = req.params.userid;
+exports.update = function (req, res/*, next*/) {
+	//var userid = req.params.userid;
 
 	res.send({
-		code:"success", 
-		message:"User was updated." 
+		code: "success",
+		message: "User was updated."
 	});
-}
+};
 
+exports.remove = function (req, res/*, next*/) {
+	//var userid = req.params.userid;
 
-
-
-exports.remove = function (req, res, next) {
-
-	var userid = req.params.userid;
 	res.send({
-		code:"success",
-		message:"User was deleted."
-
+		code: "success",
+		message: "User was deleted."
 	});
-}
+};
