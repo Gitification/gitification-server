@@ -3,82 +3,74 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
+// our database, will be set by the controller using rewire
+var db;
+
+// a message factory, will be set by the controller using rewire
+var msg_fact;
+
+
 exports.findAll = function (req, res/*, next*/) {
-	res.send([
-		{
-			user_id: 1,
-			login: "gpap",
-			firstname: "geoffrey",
-			lastname: "papaux",
-			email: "geoffrey.papaux@master.hes-so.ch"
-		},
-		{
-			"user_id": 2,
-			"login": "vgri",
-			"firstname": "Vincent",
-			"lastname": "Grivel",
-			"email": "vincent.grivel@master.hes-so.ch"
-		}
-	]);
+	var qres;
+	
+	qres = db.findAllUsers();
+	
+	res.send(qres);
 };
 
 exports.findById = function (req, res/*, next*/) {
-	var userid = req.params.userid;
-
-	res.send({
-		user_id:  userid,
-		login: "gpap",
-		firstname: "geoffrey",
-		lastname: "papaux",
-		email: "geoffrey.papaux@master.hes-so.ch"
-	});
+	var userid, qres;
+	
+	userid = req.params.userid;
+	qres = db.findUserById(userid);
+	
+	res.send(qres);
 };
 
 exports.findBadgesById = function (req, res/*, next*/) {
-	var userid = req.params.userid;
-
-	res.send({
-		user_id: userid,
-		badges_list:
-		[
-			{
-				badge_name: "super hero"
-			}
-		]
-
-	});
+	var userid, qres;
+	
+	userid = req.params.userid;
+	qres = db.findUserBadgesByUserId(userid);
+	
+	res.send(qres);
 };
 
 exports.create = function (req, res/*, next*/) {
+	var login, firstname, lastname, email, userid, payload;
 
-	res.send({
-		code: "success",
-		message: "Successfully added",
-		payload:
-		{
-			user_id: 1,
-			login: "gpap",
-			firstname: "geoffrey",
-			lastname: "papaux",
-			email: "geoffrey.papaux@master.hes-so.ch"
-		}
-	});
+	login = req.params.login;
+	firstname = req.params.firstname;
+	lastname = req.params.lastname;
+	email = req.params.email;
+	
+	userid = db.createUser(login, firstname, lastname, email);
+	payload = {	user_id: userid };
+	
+	res.send(msg_fact.success("Successfully added.", payload));
 };
 
-exports.update = function (req, res/*, next*/) {
-	//var userid = req.params.userid;
 
-	res.send({
-		code: "success",
-		message: "User was updated."
-	});
+exports.update = function (req, res/*, next*/) {
+	var userid, login, firstname, lastname, email;
+	
+	userid = req.params.user_id;
+	login = req.params.login;
+	firstname = req.params.firstname;
+	lastname = req.params.lastname;
+	email = req.params.email;
+	
+	db.udpateUser(userid, login, firstname, lastname, email);
+	
+	res.send(msg_fact.success("User was updated.", ""));
 };
 
 exports.remove = function (req, res/*, next*/) {
-	//var userid = req.params.userid;
+	var userid;
+	
+	userid = req.params.userid;
 
-	res.send({
-		code: "success",
-		message: "User was deleted."
-	});
+	db.deleteUser(userid);
+	
+	res.send(msg_fact.success("User was deleted.", ""));
 };

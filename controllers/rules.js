@@ -3,66 +3,55 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
+// our database, will be set by the controller using rewire
+var db;
+
+// a message factory, will be set by the controller using rewire
+var msg_fact;
+
+
 exports.findAll = function (req, res/*, next*/ ) {
-	res.send([
-		{
-			rule_id: 1,
-			name: "sample rule",
-			badge: 1,
-			event_types:
-			[
-				{
-					event_type: 1,
-					threshold: 10
-				}
-			]
-		}
-	]);
+	res.send(db.findAllRules());
 };
+
 
 exports.findById = function (req, res/*, next*/ ) {
 	var ruleid = req.params.ruleid;
 
-	res.send({
-		rule_id: ruleid,
-		name: "sample rule",
-		badge: 1,
-		event_types:
-		[
-			{
-				event_type: 1,
-				threshold: 10
-			}
-		]
-	});
+	res.send(db.findRuleById(ruleid));
 };
 
-exports.create = function (req, res/*, next*/ ) {
 
-	res.send({
-		code: "success",
-		message: "Successfully added",
-		payload:
-		{
-			rule_id: 1,
-		}
-	});
+exports.create = function (req, res/*, next*/ ) {
+	var ruleid, name, badge, event_types, payload;
+
+	name = req.params.name;
+	badge = req.params.badge;
+	event_types = req.params.event_types; // TODO array of event types....
+
+	ruleid = db.createRule(name, badge, event_types);
+
+	payload = { rule_id: ruleid };
+	
+	res.send(msg_fact.success("Successfully added.", payload));
 };
 
 exports.update = function (req, res/*, next*/ ) {
-	//var ruleid = req.params.ruleid;
+	var ruleid, name, badge, event_types;
+	
+	ruleid = req.params.rule_id;
+	name = req.params.name;
+	badge = req.params.badge;
+	event_types = req.params.event_types; // TODO array of event types....
 
-	res.send({
-		code: "success",
-		message: "Rule has been updated."
-	});
+	db.updateRule(ruleid, name, badge, event_types);
+	
+	res.send(msg_fact.success("Rule has been updated.", ""));
 };
 
 exports.remove = function (req, res/*, next*/ ) {
-	//var ruleid = req.params.ruleid;
+	var ruleid = req.params.ruleid;
+	db.deleteRule(ruleid);
 	
-	res.send({
-		code: "success",
-		message: "Rule has been deleted."
-	});
+	res.send(msg_fact.success("Rule has been deleted.", ""));
 };

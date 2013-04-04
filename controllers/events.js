@@ -3,39 +3,34 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
+// our database, will be set by the controller using rewire
+var db;
+
+// a message factory, will be set by the controller using rewire
+var msg_fact;
+
+
 exports.findAll = function (req, res/*, next*/ ) {
-	res.send([
-		{
-			event_id: 1,
-			type: 1,
-			user: 1,
-			issued: "2013-03-24"
-		}
-	]);
+	res.send(db.findAllEvents());
 };
 
 exports.findById = function (req, res/*, next*/ ) {
-	var eventid = req.params.userid;
+	var eventid;
+	
+	eventid = req.params.eventid;
 
-	res.send({
-		user:
-		{
-			event_id: eventid,
-			type: 1,
-			user: 1,
-			issued: "2013-03-24"
-		}
-	});
+	res.send(db.findEventById(eventid));
 };
 
 exports.create = function (req, res/*, next*/ ) {
+	var type, user, date, eventid, payload;
 
-	res.send({
-		code: "success",
-		message: "Successfully added",
-		payload:
-		{
-			"event_id": 1
-		}
-	});
+	type = req.params.type;
+	user = req.params.user;
+	date = req.params.date; // or "2013-02-26"; // TODO today or specified
+	
+	eventid = db.createEvent(type, user, date);
+	payload = { "event_id": 1 };
+
+	res.send(msg_fact.success("Successfully added.", payload));
 };

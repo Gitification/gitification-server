@@ -3,41 +3,42 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
+// our database, will be set by the controller using rewire
+var db;
+
+// a message factory, will be set by the controller using rewire
+var msg_fact;
+
+
 exports.findAll = function (req, res/*, next*/) {
-	res.send([
-		{
-			category_id: 1,
-			name: "category name"
-		}
-	]);
+	res.send(db.findAllBadgeCategories());
 };
 
 exports.findById = function (req, res/*, next*/) {
 	var categoryid = req.params.categoryid;
 
-	res.send({
-		category_id: categoryid,
-		name: "category name"
-	});
+	res.send(db.findBadgeCategoryById(categoryid));
 };
 
 exports.create = function (req, res/*, next*/) {
+	var categoryid, name, payload;
+	
+	name = req.params.name;
 
-	res.send({
-		code: "success",
-		message: "Category successfully registered.",
-		payload:
-		{
-			category_id: 1
-		}
-	});
+	categoryid = db.createBadgeCategory(name);
+
+	payload = { category_id: categoryid };
+
+	res.send(msg_fact.success("Successfully added.", payload));
 };
 
 exports.update = function (req, res/*, next*/) {
-	//var ruleid = req.params.ruleid;
-
-	res.send({
-		code: "success",
-		message: "Badge category has been updated."
-	});
+	var categoryid, name;
+	
+	categoryid = req.params.category_id;
+	name = req.params.name;
+	
+	db.updateBadgeCategory(categoryid, name);
+	
+	res.send(msg_fact.success("Badge category has been updated.", ""));
 };
