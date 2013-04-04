@@ -60,7 +60,7 @@ exports.update = function (req, res/*, next*/) {
 	lastname = req.params.lastname;
 	email = req.params.email;
 	
-	db.udpateUser(userid, login, firstname, lastname, email);
+	db.updateUser(userid, login, firstname, lastname, email);
 	
 	res.send(msg_fact.success("User was updated.", ""));
 };
