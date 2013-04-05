@@ -10,31 +10,20 @@
  *********************************************************/
 'use strict';
 
+var rc = require('riak-js').getClient();
+var bPrefix = "gitification_"; // set a prefix for all the bucket used by this application
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Application
 ////////////////////////////////////////////////////////////////////////////////////
 
-/*
-exports.findAllApplications = function () {
-	return [
-			{
-				application_id: 1,
-				site: "sample",
-				callback: "callback",
-				created_at: "20130327",
-				admin: "admin",
-				statistics:
-				{
-					user_count: 1,
-					event_count: 1,
-					badge_count: 1,
-					rule_count: 1
-				}
-			}
-		];
+
+exports.findAllApplications = function (cb) {
+	rc.getAll(bPrefix + "application", function (err, result/*, meta*/) {
+		cb.send(result);
+	});
 };
-*/
+
 
 /*
 exports.findApplicationById = function (id) {
@@ -54,6 +43,11 @@ exports.findApplicationById = function (id) {
 	};
 };
 */
+
+exports.createApplication = function (site/*, callback, admin*/) {
+	rc.save(bPrefix + "applicationblu", site, {site: site});
+	return site;
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////////

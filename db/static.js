@@ -52,7 +52,12 @@ exports.findApplicationById = function (id) {
 	};
 };
 
-
+exports.createApplication = function (/*site, callback, admin*/) {
+	var payload;
+	
+	payload = {api_key: "api-key", secret_key: "api-secret-key"};
+	return payload;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Leaderboard

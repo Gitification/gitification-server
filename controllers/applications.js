@@ -9,13 +9,20 @@ var db;
 // a message factory, will be set by the controller using rewire
 var msg_fact;
 
+var response = function (res) {
+	return {
+		send: function (result) {
+			res.send(result);
+		},
+		error: function (err) {
+			res.send(err);
+		}
+	};
+};
+
 
 exports.findAll = function (req, res/*, next*/) {
-	var qres;
-	
-	qres = db.findAllApplications();
-	
-	res.send(qres);
+	db.findAllApplications(response(res));
 };
 
 exports.findById = function (req, res/*, next*/) {
@@ -29,6 +36,6 @@ exports.findById = function (req, res/*, next*/) {
 exports.create = function (req, res/*, next*/) {
 	var payload;
 	
-	payload = {api_key: "api-key", secret_key: "api-secret-key"};
+	payload = db.createApplication(req.params.site, req.params.callback, req.params.admin);
 	res.send(msg_fact.success("Successfully registered.", payload));
 };
