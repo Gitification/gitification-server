@@ -10,11 +10,9 @@
  *********************************************************/
 'use strict';
 
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Application
 ////////////////////////////////////////////////////////////////////////////////////
-
 /*
 exports.findAllApplications = function () {
 	return [
@@ -33,9 +31,7 @@ exports.findAllApplications = function () {
 				}
 			}
 		];
-};
-*/
-
+};*/
 /*
 exports.findApplicationById = function (id) {
 	return {
@@ -52,9 +48,7 @@ exports.findApplicationById = function (id) {
 			rule_count: 1
 		}
 	};
-};
-*/
-
+};*/
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Leaderboard
@@ -76,9 +70,7 @@ exports.findLeaderboard = function () {
 		}
 	];
 };
-
 */
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Users
 ////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +94,6 @@ exports.findAllUsers = function () {
 	];
 };
 */
-
 /*
 exports.findUserById = function (userid) {
 	return {
@@ -114,8 +105,7 @@ exports.findUserById = function (userid) {
 	};
 };
 */
-
-
+/*
 exports.findUserBadgesByUserId = function (userid) {
 	return {
 		user_id: userid,
@@ -128,19 +118,18 @@ exports.findUserBadgesByUserId = function (userid) {
 
 	};
 };
-
-
+*/
 /**
  * save a new user.
  * returns the userid
  */
-/*
+ /*
 exports.createUser = function (login, firstname, lastname, email) {
 	var userid = 3;
-	
+
 	console.log("Create user {" + login + ", " + firstname + ", " +
 		lastname + ", " + email + "}");
-	
+
 	return userid;
 };
 */
@@ -152,18 +141,15 @@ exports.updateUser = function (userid, login, firstname, lastname, email) {
 	return true;
 };
 */
-
 /*
 exports.deleteUser = function (userid) {
 	console.log("Delete user {" + userid + "}");
 	return true;
 };
 */
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Events
 ////////////////////////////////////////////////////////////////////////////////////
-
 /*
 exports.findAllEvents = function () {
 	return [
@@ -176,7 +162,6 @@ exports.findAllEvents = function () {
 	];
 };
 */
-
 /*
 exports.findEventById = function (eventid) {
 	return {
@@ -187,7 +172,6 @@ exports.findEventById = function (eventid) {
 	};
 };
 */
-
 /**
  * save a new event
  * Return the event id
@@ -195,19 +179,15 @@ exports.findEventById = function (eventid) {
 /*
 exports.createEvent = function (type, user, issued) {
 	var eventid = 3;
-	
+
 	console.log("Create event {" + type + ", " + user + ", " + issued + "}");
-	
+
 	return eventid;
 };
 */
-
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Event Types
 ////////////////////////////////////////////////////////////////////////////////////
-
-
 /*
 exports.findAllEventTypes = function () {
 	return [
@@ -218,7 +198,6 @@ exports.findAllEventTypes = function () {
 	];
 };
 */
-
 /*
 exports.findEventTypeById = function (eventtypeid) {
 	return {
@@ -227,7 +206,6 @@ exports.findEventTypeById = function (eventtypeid) {
 	};
 };
 */
-
 /**
  * save a new event type
  * Return the event type id
@@ -242,11 +220,9 @@ exports.createEventType = function (event_type_name) {
 	return event_type_id;
 };
 */
- 
 ////////////////////////////////////////////////////////////////////////////////////
 // Rules
 ////////////////////////////////////////////////////////////////////////////////////
-
 /*
 exports.findAllRules = function () {
 	return [
@@ -265,7 +241,6 @@ exports.findAllRules = function () {
 	];
 };
 */
-
 /*
 exports.findRuleById = function (ruleid) {
 	return {
@@ -282,7 +257,6 @@ exports.findRuleById = function (ruleid) {
 	};
 };
 */
-
 /**
  * save a new rule
  * Return the rule id
@@ -290,31 +264,28 @@ exports.findRuleById = function (ruleid) {
 /*
 exports.createRule = function (name, badge, event_types) {
 	var ruleid;
-	 
+
 	console.log("Create rule {" + name + ", " + badge + ", " + event_types + "}");
 	ruleid = 3;
-	 
+
 	return ruleid;
 };
 */
-
 /*
 exports.updateRule = function (ruleid, name, badge, event_types) {
- 
+
 	console.log("Update rule {" + ruleid + ", " + name + ", " +
 			badge + ", " + event_types + "}");
-	 
+
 	return true;
 };
 */
-
 /*
 exports.deleteRule = function (ruleid) {
 	console.log("Delete rule {" + ruleid + "}");
 	return true;
 };
 */
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Badges
 ////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +301,6 @@ exports.findAllBadges = function () {
 	];
 };
 */
-
 /*
 exports.findBadgeById = function (badgeid) {
 	return {
@@ -341,32 +311,29 @@ exports.findBadgeById = function (badgeid) {
 	};
 };
 */
-
 /**
  * save a new badge
  * Return the badge id
  */
- /*
+/*
 exports.createBadge = function (name, icon, category_id) {
 	var badgeid;
-	
+
 	console.log("Create badge {" + name + ", " + icon + ", " + category_id + "}");
-	
+
 	badgeid = 3;
 	return badgeid;
 };
 */
-
 /*
 exports.updateBadge = function (badgeid, name, icon, category_id) {
-	
+
 	console.log("Update badge {" + badgeid + ", " + name + ", " +
 			icon + ", " + category_id + "}");
-	
+
 	return true;
 };
 */
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Badge Categories
 ////////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +347,6 @@ exports.findAllBadgeCategories = function () {
 	];
 };
 */
-
 /*
 exports.findBadgeCategoryById = function (categoryid) {
 	return {
@@ -389,7 +355,6 @@ exports.findBadgeCategoryById = function (categoryid) {
 	};
 };
 */
-
 /**
  * save a new badge
  * Return the badge id
@@ -397,14 +362,13 @@ exports.findBadgeCategoryById = function (categoryid) {
 /*
 exports.createBadgeCategory = function (name) {
 	var categoryid;
-	
+
 	console.log("Create badge category {" + name + "}");
-	
+
 	categoryid = 3;
 	return categoryid;
 };
 */
-
 /*
 exports.updateBadge = function (categoryid, name) {
 
