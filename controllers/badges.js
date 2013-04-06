@@ -3,11 +3,9 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// our database, will be set by the controller using rewire
-var db;
-
-// a message factory, will be set by the controller using rewire
-var msg_fact;
+// will be set by the controller using rewire
+var db,
+		msg_fact;
 
 exports.findAll = function (req, res/*, next*/ ) {
 	res.send(db.findAllBadges());
@@ -21,21 +19,21 @@ exports.findById = function (req, res/*, next*/ ) {
 
 exports.create = function (req, res/*, next*/ ) {
 	var badgeid, name, icon, category_id, payload;
-	
+
 	name = req.params.name;
 	icon = req.params.icon;
 	category_id = req.params.category_id;
-	
+
 	badgeid = db.createBadge(name, icon, category_id);
-	
+
 	payload = {	badge_id: badgeid };
-	
+
 	res.send(msg_fact.success("Successfully added.", payload));
 };
 
 exports.update = function (req, res/*, next*/ ) {
 	var badgeid, name, icon, category_id;
-	
+
 	badgeid = req.params.badge_id;
 	name = req.params.name;
 	icon = req.params.icon;

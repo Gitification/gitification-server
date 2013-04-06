@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// our database, will be set by the controller using rewire
+// will be set by the controller using rewire
 var db;
 
 // a message factory, will be set by the controller using rewire
@@ -11,6 +11,6 @@ var db;
 
 exports.findAll = function (req, res/*, next*/ ) {
 	var qres = db.findLeaderboard();
-	
+
 	res.send(qres);
 };
