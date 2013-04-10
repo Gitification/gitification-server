@@ -22,6 +22,13 @@ module.exports = function (grunt) {
       },
     },
     watch: {
+			/*
+			when used in production
+			reload: {
+        files: ['public/**', 'views/**'],
+        tasks: 'reload'
+      },
+      */
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
         tasks: ['jshint:gruntfile']
@@ -35,14 +42,23 @@ module.exports = function (grunt) {
         tasks: ['jshint:test', 'nodeunit']
       },
     },
+		vows: {
+			all: {
+				src: ["test/**/*.js"],
+				options : {
+					reporter : "spec"
+				}
+			},
+		}
   });
 
   // These plugins provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-vows-runner');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit']);
-  grunt.registerTask('travis', ['jshint', 'nodeunit']);
+  grunt.registerTask('travis', ['jshint', 'vows']); // 'nodeunit',
 };
