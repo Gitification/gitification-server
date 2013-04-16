@@ -295,8 +295,8 @@ exports.findAllBadges = function () {
 		{
 			badge_id: 1,
 			category_id: 1,
-			name: "badge name",
-			icon: "path/to/icon.png"
+			name: "bitcoin addicted",
+			icon: "img/badge/bitcoin.png"
 		}
 	];
 };
@@ -306,8 +306,8 @@ exports.findBadgeById = function (badgeid) {
 	return {
 		badge_id: badgeid,
 		category_id: 1,
-		name: "badge name",
-		icon: "path/to/icon.png"
+		name: "bitcoin addicted",
+		icon: "img/badge/bitcoin.png"
 	};
 };
 */

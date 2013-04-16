@@ -20,7 +20,7 @@ exports.findAllApplications = function () {
 				application_id: 1,
 				site: "sample",
 				callback: "callback",
-				created_at: "20130327",
+				created_at: "1366126364265",
 				admin: "admin",
 				statistics:
 				{
@@ -281,8 +281,14 @@ exports.findAllBadges = function () {
 		{
 			badge_id: 1,
 			category_id: 1,
-			name: "badge name",
-			icon: "path/to/icon.png"
+			name: "bitcoin addicted",
+			icon: "img/badge/bitcoin.png"
+		},
+		{
+			badge_id: 2,
+			category_id: 1,
+			name: "github addicted",
+			icon: "img/badge/github.jpg"
 		}
 	];
 };
@@ -291,8 +297,8 @@ exports.findBadgeById = function (badgeid) {
 	return {
 		badge_id: badgeid,
 		category_id: 1,
-		name: "badge name",
-		icon: "path/to/icon.png"
+		name: "bitcoin addicted",
+		icon: "img/badge/bitcoin.png"
 	};
 };
 
