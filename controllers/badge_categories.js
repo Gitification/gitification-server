@@ -13,7 +13,6 @@ exports.findAll = function (req, res/*, next*/) {
 
 exports.findById = function (req, res/*, next*/) {
 	var categoryid = req.params.categoryid;
-
 	res.send(db.findBadgeCategoryById(categoryid));
 };
 
