@@ -332,6 +332,10 @@ exports.findAllBadgeCategories = function () {
 		{
 			category_id: 1,
 			name: "category name"
+		},
+		{
+			category_id: 2,
+			name: "grivelounet"
 		}
 	];
 };
