@@ -3,14 +3,22 @@
 //////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// will be set by the controller using rewire
-var db;
+// DI
+var db,
+	responseHandler;
 
-// a message factory, will be set by the controller using rewire
-// var msg_fact; unused
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findAll = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
 
-exports.findAll = function (req, res/*, next*/ ) {
-	var qres = db.findLeaderboard();
-
-	res.send(qres);
+	var appid = req.params.appid;
+	db.findLeaderboard({'application_id': appid}, responseHandler(res, next));
 };

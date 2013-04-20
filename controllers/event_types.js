@@ -3,26 +3,58 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// will be set by the controller using rewire
+// DI
 var db,
-		msg_fact;
+	responseHandler;
 
-exports.findAll = function (req, res/*, next*/ ) {
-	res.send(db.findAllEventTypes());
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findAll = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+
+	var appid = req.params.appid;
+	db.findAllEventTypes({'application_id': appid}, responseHandler(res, next));
 };
 
-exports.findById = function (req, res/*, next*/ ) {
-	var eventtypeid = req.params.userid;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findById = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('typeid', '"typeid": must be a valid identifier').isInt();
 
-	res.send(db.findEventTypeById(eventtypeid));
+	var appid = req.params.appid,
+		typeid = req.params.typeid;
+	db.findEventTypeById({'application_id': appid, 'type_id': typeid}, responseHandler(res, next));
 };
 
-exports.create = function (req, res/*, next*/ ) {
-	var event_name, payload, eventtypeid;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.create = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('name', '"name": must be a valid string').notNull();
 
-	event_name = req.params.event_name;
-	eventtypeid = db.createEventType(event_name);
-
-	payload = { event_type_id: eventtypeid };
-	res.send(msg_fact.success("Successfully added.", payload));
+	var appid = req.params.appid,
+		name = req.params.name;
+	db.createEventType({'application_id': appid, 'name': name}, responseHandler(res, next));
 };

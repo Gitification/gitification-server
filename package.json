@@ -36,6 +36,7 @@
     "riak-js":">= 0.9.0",
     "restify":">= 2.2.0",
     "rewire":">=1.1.2",
-    "api-easy": "0.2.x"
+    "api-easy": "0.2.x",
+		"validator": "1.1.0"
   }
 }

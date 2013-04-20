@@ -3,38 +3,78 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// will be set by the controller using rewire
+// DI
 var db,
-		msg_fact;
+	responseHandler;
 
-exports.findAll = function (req, res/*, next*/) {
-	res.send(db.findAllBadgeCategories());
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findAll = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+
+	var appid = req.params.appid;
+	db.findAllBadgeCategories({'application_id': appid}, responseHandler(res, next));
 };
 
-exports.findById = function (req, res/*, next*/) {
-	var categoryid = req.params.categoryid;
-	res.send(db.findBadgeCategoryById(categoryid));
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findById = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('categoryid', '"categoryid": must be a valid identifier').isInt();
+
+	var appid = req.params.appid,
+		categoryid = req.params.categoryid;
+	db.findBadgeCategoryById({'application_id': appid, 'category_id': categoryid}, responseHandler(res, next));
 };
 
-exports.create = function (req, res/*, next*/) {
-	var categoryid, name, payload;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.create = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('name', '"name": must be a valid string').notNull();
 
-	name = req.params.name;
-
-	categoryid = db.createBadgeCategory(name);
-
-	payload = { category_id: categoryid };
-
-	res.send(msg_fact.success("Successfully added.", payload));
+	var appid = req.params.appid,
+		name = req.params.name;
+	db.createBadgeCategory({'application_id': appid, 'name': name}, responseHandler(res, next));
 };
 
-exports.update = function (req, res/*, next*/) {
-	var categoryid, name;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.update = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('categoryid', '"categoryid": must be a valid identifier').isInt();
+	req.check('name', '"name": must be a valid string').notNull();
 
-	categoryid = req.params.category_id;
-	name = req.params.name;
-
-	db.updateBadgeCategory(categoryid, name);
-
-	res.send(msg_fact.success("Badge category has been updated.", ""));
+	var appid = req.params.appid,
+		categoryid = req.params.categoryid,
+		name = req.params.name;
+	db.updateBadgeCategory({'application_id': appid, 'category_id': categoryid, 'name': name}, responseHandler(res, next));
 };

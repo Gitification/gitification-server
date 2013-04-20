@@ -3,29 +3,52 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// will be set by the controller using rewire
+// DI
 var db,
-		msg_fact;
+	responseHandler;
 
-exports.findAll = function (req, res/*, next*/) {
-	var qres;
-
-	qres = db.findAllApplications();
-
-	res.send(qres);
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findAll = function (req, res, next) {
+	db.findAllApplications(responseHandler(res, next));
 };
 
-exports.findById = function (req, res/*, next*/) {
-	var appid, qres;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findById = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('appid', '"appid": must be a valid identifier').isInt();
 
-	appid = req.params.appid;
-	qres = db.findApplicationById(appid);
-	res.send(qres);
+	var appid = req.params.appid;
+	db.findApplicationById({'application_id': appid}, responseHandler(res, next));
 };
 
-exports.create = function (req, res/*, next*/) {
-	var payload;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.create = function (req, res, next) {
+	req.onValidationError(function (msg) {
+		responseHandler(res).error(400, msg);
+	});
+	req.check('site', '"site": must be a valid URL').isUrl();
+	req.check('callback', '"callback": must be a valid URL').isUrl();
+	req.check('admin', '"admin": must be a valid Email adress').isEmail();
 
-	payload = {api_key: "api-key", secret_key: "api-secret-key"};
-	res.send(msg_fact.success("Successfully registered.", payload));
+	var site = req.params.site,
+		callback = req.params.callback,
+		admin = req.params.admin;
+	db.createApplication({'site': site, 'callback': callback, 'admin': admin}, responseHandler(res, next));
 };
