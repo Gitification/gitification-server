@@ -51,6 +51,7 @@ suite.discuss('When asking our API')
 																				]
 																			})
       .expect(201)
+			.undiscuss()
     .discuss('with no event type')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
