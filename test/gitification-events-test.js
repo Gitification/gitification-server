@@ -27,7 +27,6 @@ suite.discuss('When asking our API')
 			.get('applications/1/events/1')
 			.expect(200)
 			.undiscuss()
-/*
 		.discuss('a specific event but with invalid id value')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -40,8 +39,9 @@ suite.discuss('When asking our API')
     .discuss('with valid parameters')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
-      .post('applications/1/events', {type: '1',
-																			user: '2'})
+      .post('applications/1/events', {type: 1,
+																			user: 2,
+																			issued: '04-22-2013'})
       .expect(201)// TODO add content...
       .undiscuss()
     .discuss('with not all required parameters')
@@ -59,6 +59,5 @@ suite.discuss('When asking our API')
       .undiscuss()
     .undiscuss()
 	.undiscuss()
-*/
 	.export(module);
 

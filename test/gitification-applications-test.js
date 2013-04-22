@@ -26,7 +26,6 @@ suite.discuss('When asking our API')
 			.get('applications/1')
 			.expect(200)
 			.undiscuss()
-/*
 		.discuss('a specific application with a string as id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -39,9 +38,9 @@ suite.discuss('When asking our API')
 		.discuss('with valid parameters')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.post('applications/', {site: 'app site',
-															callback: 'http://calbackurl',
-															admin: 'admin string'})
+			.post('applications/', {site: 'http://app.com',
+															callback: 'http://calbackurl.com',
+															admin: 'admin@cat.com'})
 			.expect(201)// TODO add content...
 			.undiscuss()
 		.discuss('with not all required parameters')
@@ -52,5 +51,4 @@ suite.discuss('When asking our API')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
-*/
 	.export(module);

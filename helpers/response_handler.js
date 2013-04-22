@@ -27,8 +27,8 @@ module.exports = function (res, next) {
 			res.send(payload);
 			next();
 		},
-		success: function (message, payload) {
-			res.send(reply("success", message, payload));
+		success: function (status, message, payload) {
+			res.send(status, reply("success", message, payload));
 		},
 		error: function (status, message, payload) {
 			res.send(status, reply("error", message, payload));

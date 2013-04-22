@@ -14,11 +14,14 @@ var db,
  * @param next facilitate restify function chaining
  */
 exports.findAll = function (req, res, next) {
-	req.onValidationError(function (msg) {
-		responseHandler(res).error(400, msg);
-	});
 	req.check('appid', '"appid": must be a valid identifier').isInt();
+	var errors = req.validationErrors(),
+		appid;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
 
-	var appid = req.params.appid;
+	appid = req.params.appid;
 	db.findLeaderboard({'application_id': appid}, responseHandler(res, next));
 };

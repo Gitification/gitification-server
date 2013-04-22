@@ -32,7 +32,7 @@ suite.discuss('When asking our API')
 			.get('applications/1/users/1')
 			.expect(200)
 			.undiscuss()
-/*
+
 		.discuss('the details of a user with string as id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -48,7 +48,7 @@ suite.discuss('When asking our API')
 			.post('applications/1/users/', {login: 'testlogin',
 																			firstname: 'testfirstname',
 																			lastname: 'testlastname',
-																			email: 'testemail'})
+																			email: 'testemail@email.com'})
 			.expect(201)// TODO add content...
 			.undiscuss()
 		.discuss('with not all required parameters')
@@ -66,8 +66,20 @@ suite.discuss('When asking our API')
 			.put('applications/1/users/1', {login: 'testlogin',
 																			firstname: 'testfirstname',
 																			lastname: 'testlastname',
-																			email: 'testemail'})
-			.expect(200, { code: 'success', message: 'User was updated.' })
+																			email: 'testemail@email.com'})
+			.expect(200,
+{ code: 'success',
+	message: 'User was updated.',
+	payload: {
+		login: 'testlogin',
+		firstname: 'testfirstname',
+		lastname: 'testlastname',
+		email: 'testemail@email.com',
+		application_id: 1,
+		user_id: 1
+	}
+}
+			)
 			.undiscuss()
 		.discuss('with not all parameters')
 			.use('localhost', 8080)
@@ -92,5 +104,5 @@ suite.discuss('When asking our API')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
-*/
+
 	.export(module);

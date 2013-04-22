@@ -19,7 +19,6 @@
  * @param callback
  */
 exports.findAllApplications = function (callback) {
-	console.log(callback);
 	callback.send([
 		{
 			application_id: 1,
@@ -64,7 +63,7 @@ exports.findApplicationById = function (app, callback) {
  * @param callback
  */
 exports.createApplication = function (app, callback) {
-	callback.success("Successfully registered.", {'api_key': "api_key", 'secret_key': "secret_key"});
+	callback.success(201, "Successfully registered.", {'api_key': "api_key", 'secret_key': "secret_key"});
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -161,10 +160,7 @@ exports.findUserBadgesByUserId = function (user, callback) {
  */
 exports.createUser = function (user, callback) {
 	user.user_id = 3;
-
-	console.log("Create user {" + user.login + ", " + user.firstname + ", " +
-		user.lastname + ", " + user.email + "}");
-	callback.success("Successfully created user", user);
+	callback.success(201, "Successfully created user", user);
 };
 
 /**
@@ -173,9 +169,7 @@ exports.createUser = function (user, callback) {
  * @param callback
  */
 exports.updateUser = function (user, callback) {
-	console.log("Update user {" + user.user_id + ", " + user.login + ", " + user.firstname + ", " +
-		user.lastname + ", " + user.email + "}");
-	callback.success("Successfully updated user", user);
+	callback.success(200, "User was updated.", user);
 };
 
 /**
@@ -184,8 +178,7 @@ exports.updateUser = function (user, callback) {
  * @param callback
  */
 exports.deleteUser = function (user, callback) {
-	console.log("Delete user {" + user.user_id + "}");
-	callback.success("Successfully deleted user", user);
+	callback.success(200, "Successfully deleted user", user);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -228,8 +221,7 @@ exports.findEventById = function (event, callback) {
  */
 exports.createEvent = function (event, callback) {
 	event.event_id = 3;
-	console.log("Create event {" + event.type + ", " + event.user + ", " + event.issued + "}");
-	callback.success("Successfully created event", event);
+	callback.success(201, "Successfully created event", event);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -268,8 +260,7 @@ exports.findEventTypeById = function (eventtype, callback) {
  */
 exports.createEventType = function (eventtype, callback) {
 	eventtype.type_id = 3;
-	console.log("Create event type {" + eventtype.name + "}");
-	callback.success("Successfully created event", eventtype);
+	callback.success(201, "Successfully created event", eventtype);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -322,9 +313,8 @@ exports.findRuleById = function (rule, callback) {
  * @param callback
  */
 exports.createRule = function (rule, callback) {
-	console.log("Create rule {" + rule.name + ", " + rule.badge_id + ", " + rule.event_types + "}");
 	rule.rule_id = 3;
-	callback.success("Successfully created rule", rule);
+	callback.success(201, "Successfully created rule", rule);
 };
 
 /**
@@ -333,10 +323,7 @@ exports.createRule = function (rule, callback) {
  * @param callback
  */
 exports.updateRule = function (rule, callback) {
-
-	console.log("Update rule {" + rule.rule_id + ", " + rule.name + ", " +
-		rule.badge_id + ", " + rule.event_types + "}");
-	callback.success("Successfully updated rule", rule);
+	callback.success(200, "Successfully updated rule", rule);
 };
 
 /**
@@ -345,8 +332,7 @@ exports.updateRule = function (rule, callback) {
  * @param callback
  */
 exports.deleteRule = function (rule, callback) {
-	console.log("Delete rule {" + rule.rule_id + "}");
-	callback.success("Successfully deleted rule", rule);
+	callback.success(200, "Successfully deleted rule", rule);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -395,10 +381,8 @@ exports.findBadgeById = function (badge, callback) {
  * @param callback
  */
 exports.createBadge = function (badge, callback) {
-	console.log("Create badge {" + badge.name + ", " + badge.icon + ", " + badge.category_id + "}");
-
 	badge.badge_id = 3;
-	callback.success("Successfully created badge", badge);
+	callback.success(201, "Successfully created badge", badge);
 };
 
 /**
@@ -407,9 +391,7 @@ exports.createBadge = function (badge, callback) {
  * @param callback
  */
 exports.updateBadge = function (badge, callback) {
-	console.log("Update badge {" + badge.badge_id + ", " + badge.name + ", " +
-		badge.icon + ", " + badge.category_id + "}");
-	callback.success("Successfully updated badge", badge);
+	callback.success(200, "Badge was updated.", badge);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -452,9 +434,8 @@ exports.findBadgeCategoryById = function (category, callback) {
  * @param callback
  */
 exports.createBadgeCategory = function (category, callback) {
-	console.log("Create badge category {" + category.name + "}");
 	category.category_id = 3;
-	callback.success("Successfully created badge category", category);
+	callback.success(201, "Successfully created badge category", category);
 };
 
 /**
@@ -463,6 +444,5 @@ exports.createBadgeCategory = function (category, callback) {
  * @param callback
  */
 exports.updateBadgeCategory = function (category, callback) {
-	console.log("Update badge category {" + category.category_id + ", " + category.name + "}");
-	callback.success("Successfully updated badge category", category);
+	callback.success(200, "Successfully updated badge category", category);
 };

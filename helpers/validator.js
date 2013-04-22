@@ -20,6 +20,9 @@
  *
  * 4. Done! Access your validated and sanitized paramaters through the
  *    `req.params` object
+ *
+ * Based on: https://github.com/cjroebuck/restify-validator
+ * and : https://gist.github.com/chriso/752126
  */
 'use strict';
 
@@ -51,7 +54,69 @@ http.IncomingMessage.prototype.mixinParams = function () {
 };
 
 http.IncomingMessage.prototype.check = function (param, fail_msg) {
-	return validator.check(this.params[param], fail_msg);
+
+	var value,
+		self = this;
+
+	// If param is not an array, then split by dot notation
+	// returning an array. It will return an array even if
+	// param doesn't have the dot notation.
+	//      'blogpost' = ['blogpost']
+	//      'login.username' = ['login', 'username']
+	// For regex matches you can access the parameters using numbers.
+	if (!Array.isArray(param)) {
+		param = typeof param === 'number' ?
+			[param] :
+			param.split('.').filter(function (e) {
+				return e !== '';
+			});
+	}
+
+
+	// Extract value from params
+	param.map(function (item) {
+		if (value === undefined) {
+			value = self.params[item];
+		} else {
+			value = value[item];
+		}
+	});
+	param = param.join('.');
+
+	validator.error = function (msg) {
+		var error = {
+			param: param,
+			msg: msg,
+			value: value
+		};
+		if (self._validationErrors === undefined) {
+			self._validationErrors = [];
+		}
+		self._validationErrors.push(error);
+
+		if (self.onErrorCallback) {
+			self.onErrorCallback(msg);
+		}
+		return self;
+	};
+	return validator.check(value, fail_msg);
+};
+
+//http.IncomingMessage.prototype.check = function (param, fail_msg) {
+//	return validator.check(this.params[param], fail_msg);
+//};
+http.IncomingMessage.prototype.validationErrors = function (mapped) {
+	if (this._validationErrors === undefined) {
+		return null;
+	}
+	if (mapped) {
+		var errors = {};
+		this._validationErrors.forEach(function (err) {
+			errors[err.param] = err;
+		});
+		return errors;
+	}
+	return this._validationErrors;
 };
 
 http.IncomingMessage.prototype.checkHeader = function (param, fail_msg) {

@@ -30,7 +30,6 @@ suite.discuss('When asking our API')
 			.get('applications/1/events/types/1')
 			.expect(200)
 			.undiscuss()
-/*
 		.discuss('a specific event type but with invalid id value')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -54,5 +53,4 @@ suite.discuss('When asking our API')
       .undiscuss()
     .undiscuss()
 	.undiscuss()
-*/
 	.export(module);

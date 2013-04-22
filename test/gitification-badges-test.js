@@ -27,7 +27,7 @@ suite.discuss('When asking our API')
 			.get('applications/1/badges/1')
 			.expect(200)
 			.undiscuss()
-/*
+
 		.discuss('a specific badge but with invalid id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -49,7 +49,6 @@ suite.discuss('When asking our API')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
 			.post('applications/1/badges/', {	name: 'badgename',
-																				icon: 'http://badgeurl.url',
 																				category_id: '1'})
 			.expect(400)
 			.undiscuss()
@@ -70,7 +69,19 @@ suite.discuss('When asking our API')
 			.put('applications/1/badges/1', {	name: 'newbadgename',
 																				icon: 'http://badgeurl.url',
 																				category_id: '1'})
-			.expect(200, { code: 'success', message: 'User was updated.' })
+			.expect(200,
+	{
+		code: 'success',
+		message: 'Badge was updated.',
+		payload: {
+			name: 'newbadgename',
+			icon: 'http://badgeurl.url',
+			category_id: 1,
+			badge_id: 1,
+			application_id: 1
+		}
+	}
+			)
 			.undiscuss()
 		.discuss('with not all parameters')
 			.use('localhost', 8080)
@@ -88,5 +99,4 @@ suite.discuss('When asking our API')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
-*/
 	.export(module);

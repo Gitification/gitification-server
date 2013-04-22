@@ -27,7 +27,6 @@ suite.discuss('When asking our API')
 			.get('applications/1/badges/categories/1')
 			.expect(200)
 			.undiscuss()
-/*
 		.discuss('a specific badge category with a string as id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -64,6 +63,5 @@ suite.discuss('When asking our API')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
-*/
 	.export(module);
 

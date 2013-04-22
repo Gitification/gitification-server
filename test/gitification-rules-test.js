@@ -31,7 +31,6 @@ suite.discuss('When asking our API')
 			.get('applications/1/rules/1')
 			.expect(200)
 			.undiscuss()
-/*
 		.discuss('the details of a rule with string as id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
@@ -45,7 +44,7 @@ suite.discuss('When asking our API')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
       .post('applications/1/rules/', {name: 'rulename',
-																			badge: '1',
+																			badge_id: '1',
 																			event_types:
 																				[{event_type: '1',
 																					threshold: '100'}
@@ -56,14 +55,14 @@ suite.discuss('When asking our API')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
       .post('applications/1/rules/', {name: 'rulename',
-																			badge: '1'})
+																			badge_id: '1'})
       .expect(400)
       .undiscuss()
     .discuss('with badge as string instead of oid')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
       .post('applications/1/rules/', {name: 'rulename',
-																			badge: 'asdf',
+																			badge_id: 'asdf',
 																			event_types:
 																				[{event_type: '1',
 																					threshold: '100'}
@@ -78,7 +77,7 @@ suite.discuss('When asking our API')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
 			.put('applications/1/rules/1', {name: 'test',
-																			badge: '1',
+																			badge_id: '1',
 																			event_types:
 																				[{event_type: '1',
 																					threshold: '100'}
@@ -89,7 +88,7 @@ suite.discuss('When asking our API')
 		.discuss('with missing badge type')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.put('applications/1/users/', {	name: 'test',
+			.put('applications/1/rules/1', {	name: 'test',
 																			event_types:
 																				[{event_type: '1',
 																					threshold: '100'}
@@ -113,5 +112,4 @@ suite.discuss('When asking our API')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
-*/
   .export(module);
