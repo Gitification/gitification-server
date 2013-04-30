@@ -44,7 +44,7 @@ exports.findApplicationById = function (id) {
 */
 
 exports.createApplication = function (site/*, callback, admin*/) {
-	rc.save(bPrefix + "applicationblu", site, {site: site});
+	rc.save(bPrefix + "application", site, {site: site});
 	return site;
 };
 
