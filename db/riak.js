@@ -11,41 +11,54 @@
 'use strict';
 
 var rc = require('riak-js').getClient();
+var shortid = require('shortid');
 var bPrefix = "gitification_"; // set a prefix for all the bucket used by this application
+
+function magicCheck(callback, err, result, meta) {
+	if (err !== null) {
+		callback.error(err.statusCode, meta);
+	}
+	else {
+		callback.send(result);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Application
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllApplications = function (cb) {
-	rc.getAll(bPrefix + "application", function (err, result/*, meta*/) {
-		cb.send(result);
+exports.findAllApplications = function (callback) {
+	rc.getAll(bPrefix + "application", function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
 	});
 };
 
 
-/*
-exports.findApplicationById = function (id) {
-	return {
-		application_id: id,
-		site: "sample",
-		callback: "callback",
-		created_at: "20130327",
-		admin: "admin",
-		statistics:
-		{
-			user_count: 1,
-			event_count: 1,
-			badge_count: 1,
-			rule_count: 1
-		}
-	};
+exports.findApplicationById = function (app, callback) {
+	rc.get(bPrefix + "application", app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
 };
-*/
 
-exports.createApplication = function (site/*, callback, admin*/) {
-	rc.save(bPrefix + "application", site, {site: site});
-	return site;
+exports.createApplication = function (input, callback) {
+	var app, statistics;
+	app.application_id = shortid.generate();
+	app.site = input.site;
+	app.callback = input.callback;
+	app.admin = input.admin;
+	app.createdAt = new Date();
+
+	statistics = {
+		user_count: 0,
+		event_count: 0,
+		badge_count: 0,
+		rule_count: 0
+	};
+	app.statistics = statistics;
+
+	rc.save(bPrefix + "application", app.application_id, app, function (/*err, result, meta*/) {
+		callback.success(201, "Successfully registered.", {'application_id': app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"});
+	});
 };
 
 
