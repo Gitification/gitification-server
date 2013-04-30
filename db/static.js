@@ -1,11 +1,11 @@
 /**********************************************************
  * This file is part of the Gitification project
  *
- * Authors	:	Vincent Pasquier, Vincent Grivel
- *						Dorian Gambin, Geoffrey Papaux
+ * Authors  :  Vincent Pasquier, Vincent Grivel
+ *            Dorian Gambin, Geoffrey Papaux
  *
- * Purpose :	Implementation of the database functions returning
- *						static content
+ * Purpose :  Implementation of the database functions returning
+ *            static content
  *
  *********************************************************/
 'use strict';
@@ -14,40 +14,56 @@
 // Application
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllApplications = function () {
-	return [
-			{
-				application_id: 1,
-				site: "sample",
-				callback: "callback",
-				created_at: "20130327",
-				admin: "admin",
-				statistics:
-				{
-					user_count: 1,
-					event_count: 1,
-					badge_count: 1,
-					rule_count: 1
-				}
+/**
+ *
+ * @param callback
+ */
+exports.findAllApplications = function (callback) {
+	callback.send([
+		{
+			application_id: 1,
+			site: "sample",
+			callback: "callback",
+			created_at: "1366126364265",
+			admin: "admin",
+			statistics: {
+				user_count: 1,
+				event_count: 1,
+				badge_count: 1,
+				rule_count: 1
 			}
-		];
+		}
+	]);
 };
 
-exports.findApplicationById = function (id) {
-	return {
-		application_id: id,
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findApplicationById = function (app, callback) {
+	callback.send({
+		application_id: app.id,
 		site: "sample",
 		callback: "callback",
 		created_at: "20130327",
 		admin: "admin",
-		statistics:
-		{
+		statistics: {
 			user_count: 1,
 			event_count: 1,
 			badge_count: 1,
 			rule_count: 1
 		}
-	};
+	});
+};
+
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.createApplication = function (app, callback) {
+	callback.success(201, "Successfully registered.", {'api_key': "api_key", 'secret_key': "secret_key"});
 };
 
 exports.createApplication = function (/*site, callback, admin*/) {
@@ -61,8 +77,13 @@ exports.createApplication = function (/*site, callback, admin*/) {
 // Leaderboard
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findLeaderboard = function () {
-	return [
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findLeaderboard = function (app, callback) {
+	callback.send([
 		{
 			position: 1,
 			user_id: 0,
@@ -70,20 +91,24 @@ exports.findLeaderboard = function () {
 			firstname: "geoffrey",
 			lastname: "papaux",
 			email: "geoffrey.papaux@master.hes-so.ch",
-			statistics:
-			{
-				badge_count: 1,
+			statistics: {
+				badge_count: 1
 			}
 		}
-	];
+	]);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Users
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllUsers = function () {
-	return [
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllUsers = function (app, callback) {
+	callback.send([
 		{
 			user_id: 1,
 			login: "gpap",
@@ -98,268 +123,333 @@ exports.findAllUsers = function () {
 			lastname: "Grivel",
 			email: "vincent.grivel@master.hes-so.ch"
 		}
-	];
+	]);
 };
 
-exports.findUserById = function (userid) {
-	return {
-		user_id:  userid,
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.findUserById = function (user, callback) {
+	callback.send({
+		user_id: user.user_id,
 		login: "gpap",
 		firstname: "geoffrey",
 		lastname: "papaux",
 		email: "geoffrey.papaux@master.hes-so.ch"
-	};
-};
-
-exports.findUserBadgesByUserId = function (userid) {
-	return {
-		user_id: userid,
-		badges_list:
-		[
-			{
-				badge_name: "super hero"
-			}
-		]
-
-	};
+	});
 };
 
 /**
- * save a new user.
- * returns the userid
+ *
+ * @param user
+ * @param callback
  */
-exports.createUser = function (login, firstname, lastname, email) {
-	var userid = 3;
-
-	console.log("Create user {" + login + ", " + firstname + ", " +
-		lastname + ", " + email + "}");
-
-	return userid;
+exports.findUserBadgesByUserId = function (user, callback) {
+	callback.send({
+		user_id: user.user_id,
+		badges_list: [
+			{
+				badge_id: 1,
+				category_id: 1,
+				name: "Super hero",
+				icon: "blu.png"
+			}
+		]
+	});
 };
 
-exports.updateUser = function (userid, login, firstname, lastname, email) {
-	console.log("Update user {" + userid + ", " + login + ", " + firstname + ", " +
-		lastname + ", " + email + "}");
-	return true;
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.createUser = function (user, callback) {
+	user.user_id = 3;
+	callback.success(201, "Successfully created user", user);
 };
 
-exports.deleteUser = function (userid) {
-	console.log("Delete user {" + userid + "}");
-	return true;
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.updateUser = function (user, callback) {
+	callback.success(200, "User was updated.", user);
+};
+
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.deleteUser = function (user, callback) {
+	callback.success(200, "Successfully deleted user", user);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Events
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllEvents = function () {
-	return [
+/**
+ *
+ * @param callback
+ */
+exports.findAllEvents = function (app, callback) {
+	callback.send([
 		{
 			event_id: 1,
 			type: 1,
 			user: 1,
 			issued: "2013-03-24"
 		}
-	];
-};
-
-exports.findEventById = function (eventid) {
-	return {
-		event_id: eventid,
-		type: 1,
-		user: 1,
-		issued: "2013-03-24"
-	};
+	]);
 };
 
 /**
- * save a new event
- * Return the event id
+ *
+ * @param event
+ * @param callback
  */
-exports.createEvent = function (type, user, issued) {
-	var eventid = 3;
+exports.findEventById = function (event, callback) {
+	callback.send({
+		event_id: event.event_id,
+		type: 1,
+		user: 1,
+		issued: "2013-03-24"
+	});
+};
 
-	console.log("Create event {" + type + ", " + user + ", " + issued + "}");
-
-	return eventid;
+/**
+ *
+ * @param event
+ * @param callback
+ */
+exports.createEvent = function (event, callback) {
+	event.event_id = 3;
+	callback.success(201, "Successfully created event", event);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Event Types
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllEventTypes = function () {
-	return [
+/**
+ *
+ * @param callback
+ */
+exports.findAllEventTypes = function (app, callback) {
+	callback.send([
 		{
 			type_id: 1,
 			name: "commits"
 		}
-	];
-};
-
-exports.findEventTypeById = function (eventtypeid) {
-	return {
-		type_id: eventtypeid,
-		name: "commits"
-	};
+	]);
 };
 
 /**
- * save a new event type
- * Return the event type id
+ *
+ * @param eventtype
+ * @param callback
  */
-exports.createEventType = function (event_type_name) {
-	var event_type_id;
+exports.findEventTypeById = function (eventtype, callback) {
+	callback.send({
+		type_id: eventtype.type_id,
+		name: "commits"
+	});
+};
 
-	console.log("Create event type {" + event_type_name + "}");
-	event_type_id = 3;
-
-	return event_type_id;
+/**
+ * Saves a new event type
+ * @param eventtype
+ * @param callback
+ */
+exports.createEventType = function (eventtype, callback) {
+	eventtype.type_id = 3;
+	callback.success(201, "Successfully created event", eventtype);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Rules
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllRules = function () {
-	return [
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllRules = function (app, callback) {
+	callback.send([
 		{
 			rule_id: 1,
 			name: "sample rule",
 			badge: 1,
-			event_types:
-			[
+			event_types: [
 				{
 					event_type: 1,
 					threshold: 10
 				}
 			]
 		}
-	];
+	]);
 };
 
-exports.findRuleById = function (ruleid) {
-	return {
-		rule_id: ruleid,
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.findRuleById = function (rule, callback) {
+	callback.send({
+		rule_id: rule.ruleid,
 		name: "sample rule",
 		badge: 1,
-		event_types:
-		[
+		event_types: [
 			{
 				event_type: 1,
 				threshold: 10
 			}
 		]
-	};
+	});
 };
 
 /**
- * save a new rule
- * Return the rule id
+ * Saves a new rule
+ * @param rule
+ * @param callback
  */
-exports.createRule = function (name, badge, event_types) {
-	var ruleid;
-
-	console.log("Create rule {" + name + ", " + badge + ", " + event_types + "}");
-	ruleid = 3;
-
-	return ruleid;
+exports.createRule = function (rule, callback) {
+	rule.rule_id = 3;
+	callback.success(201, "Successfully created rule", rule);
 };
 
-exports.updateRule = function (ruleid, name, badge, event_types) {
-
-	console.log("Update rule {" + ruleid + ", " + name + ", " +
-			badge + ", " + event_types + "}");
-
-	return true;
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.updateRule = function (rule, callback) {
+	callback.success(200, "Successfully updated rule", rule);
 };
 
-exports.deleteRule = function (ruleid) {
-	console.log("Delete rule {" + ruleid + "}");
-	return true;
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.deleteRule = function (rule, callback) {
+	callback.success(200, "Successfully deleted rule", rule);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Badges
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllBadges = function () {
-	return [
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllBadges = function (app, callback) {
+	callback.send([
 		{
 			badge_id: 1,
 			category_id: 1,
-			name: "badge name",
-			icon: "path/to/icon.png"
+			name: "bitcoin addicted",
+			icon: "img/badge/bitcoin.png"
+		},
+		{
+			badge_id: 2,
+			category_id: 1,
+			name: "github addicted",
+			icon: "img/badge/github.jpg"
 		}
-	];
-};
-
-exports.findBadgeById = function (badgeid) {
-	return {
-		badge_id: badgeid,
-		category_id: 1,
-		name: "badge name",
-		icon: "path/to/icon.png"
-	};
+	]);
 };
 
 /**
- * save a new badge
- * Return the badge id
+ *
+ * @param badge
+ * @param callback
  */
-exports.createBadge = function (name, icon, category_id) {
-	var badgeid;
-
-	console.log("Create badge {" + name + ", " + icon + ", " + category_id + "}");
-
-	badgeid = 3;
-	return badgeid;
+exports.findBadgeById = function (badge, callback) {
+	callback.send({
+		badge_id: badge.badge_id,
+		category_id: 1,
+		name: "bitcoin addicted",
+		icon: "img/badge/bitcoin.png"
+	});
 };
 
-exports.updateBadge = function (badgeid, name, icon, category_id) {
+/**
+ * Saves a new badge
+ * @param badge
+ * @param callback
+ */
+exports.createBadge = function (badge, callback) {
+	badge.badge_id = 3;
+	callback.success(201, "Successfully created badge", badge);
+};
 
-	console.log("Update badge {" + badgeid + ", " + name + ", " +
-			icon + ", " + category_id + "}");
-
-	return true;
+/**
+ *
+ * @param badge
+ * @param callback
+ */
+exports.updateBadge = function (badge, callback) {
+	callback.success(200, "Badge was updated.", badge);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Badge Categories
 ////////////////////////////////////////////////////////////////////////////////////
 
-exports.findAllBadgeCategories = function () {
-	return [
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllBadgeCategories = function (app, callback) {
+	callback.send([
 		{
 			category_id: 1,
 			name: "category name"
+		},
+		{
+			category_id: 2,
+			name: "grivelounet"
 		}
-	];
-};
-
-exports.findBadgeCategoryById = function (categoryid) {
-	return {
-		category_id: categoryid,
-		name: "category name"
-	};
+	]);
 };
 
 /**
- * save a new badge
- * Return the badge id
+ *
+ * @param category
+ * @param callback
  */
-exports.createBadgeCategory = function (name) {
-	var categoryid;
-
-	console.log("Create badge category {" + name + "}");
-
-	categoryid = 3;
-	return categoryid;
+exports.findBadgeCategoryById = function (category, callback) {
+	callback.send({
+		category_id: category.category_id,
+		name: "category name"
+	});
 };
 
-exports.updateBadge = function (categoryid, name) {
+/**
+ * Saves a new badge category
+ * @param category
+ * @param callback
+ */
+exports.createBadgeCategory = function (category, callback) {
+	category.category_id = 3;
+	callback.success(201, "Successfully created badge category", category);
+};
 
-	console.log("Update badge category {" + categoryid + ", " + name + "}");
-
-	return true;
+/**
+ *
+ * @param category
+ * @param callback
+ */
+exports.updateBadgeCategory = function (category, callback) {
+	callback.success(200, "Successfully updated badge category", category);
 };

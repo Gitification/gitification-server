@@ -3,43 +3,112 @@
 ////////////////////////////////////////////////////////////////////////////////////
 'use strict';
 
-// will be set by the controller using rewire
+// DI
 var db,
-		msg_fact;
+	responseHandler;
 
-exports.findAll = function (req, res/*, next*/ ) {
-	res.send(db.findAllBadges());
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findAll = function (req, res, next) {
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	var errors = req.validationErrors(),
+		appid;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
+
+	appid = req.params.appid;
+	db.findAllBadges({'application_id': appid}, responseHandler(res, next));
 };
 
-exports.findById = function (req, res/*, next*/ ) {
-	var badgeid = req.params.badgeid;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.findById = function (req, res, next) {
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('badgeid', '"badgeid": must be a valid identifier').isInt();
+	var errors = req.validationErrors(),
+		appid,
+		badgeid;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
 
-	res.send(db.findBadgeById(badgeid));
+	appid = req.params.appid;
+	badgeid = req.params.badgeid;
+	db.findBadgeById({'application_id': appid, 'badge_id': badgeid}, responseHandler(res, next));
 };
 
-exports.create = function (req, res/*, next*/ ) {
-	var badgeid, name, icon, category_id, payload;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.create = function (req, res, next) {
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('name', '"name": must be a valid string').notNull();
+	req.check('icon', '"icon": must be a valid URL').isUrl();
+	req.check('category_id', '"category_id": must be a valid identifier').isInt();
+	var errors = req.validationErrors(),
+		appid,
+		name,
+		icon,
+		categoryid;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
 
+	appid = req.params.appid;
 	name = req.params.name;
 	icon = req.params.icon;
-	category_id = req.params.category_id;
-
-	badgeid = db.createBadge(name, icon, category_id);
-
-	payload = {	badge_id: badgeid };
-
-	res.send(msg_fact.success("Successfully added.", payload));
+	categoryid = req.params.category_id;
+	db.createBadge(
+		{'application_id': appid, 'name': name, 'icon': icon, 'category_id': categoryid},
+		responseHandler(res, next)
+	);
 };
 
-exports.update = function (req, res/*, next*/ ) {
-	var badgeid, name, icon, category_id;
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.update = function (req, res, next) {
+	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('badgeid', '"badgeid": must be a valid identifier').isInt();
+	req.check('name', '"name": must be a valid string').notNull();
+	req.check('icon', '"icon": must be a valid URL').isUrl();
+	req.check('category_id', '"category_id": must be a valid identifier').isInt();
+	var errors = req.validationErrors(),
+		appid,
+		badgeid,
+		name,
+		icon,
+		categoryid;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
 
-	badgeid = req.params.badge_id;
+	appid = req.params.appid;
+	badgeid = req.params.badgeid;
 	name = req.params.name;
 	icon = req.params.icon;
-	category_id = req.params.category_id;
-
-	db.updateBadge(badgeid, name, icon, category_id);
-
-	res.send(msg_fact.success("Badge has been updated.", ""));
+	categoryid = req.params.category_id;
+	db.updateBadge(
+		{'application_id': appid, 'badge_id': badgeid, 'name': name, 'icon': icon, 'category_id': categoryid},
+		responseHandler(res, next)
+	);
 };
