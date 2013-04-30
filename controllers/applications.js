@@ -24,7 +24,7 @@ exports.findAll = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.findById = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid;
 	if (errors) {
