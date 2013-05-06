@@ -14,7 +14,7 @@ var db,
  * @param next facilitate restify function chaining
  */
 exports.findAll = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid;
 	if (errors) {
@@ -33,8 +33,8 @@ exports.findAll = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.findById = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('userid', '"userid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('userid', '"userid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		userid;
@@ -77,7 +77,7 @@ exports.findBadgesById = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.create = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	req.check('login', '"login": must be a valid string').notNull();
 	req.check('firstname', '"firstname": must be a valid string').notNull();
 	req.check('lastname', '"lastname": must be a valid string').notNull();
@@ -111,8 +111,8 @@ exports.create = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.update = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('userid', '"userid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('userid', '"userid": must be a valid identifier').notNull();
 	req.check('login', '"login": must be a valid string').notNull();
 	req.check('firstname', '"firstname": must be a valid string').notNull();
 	req.check('lastname', '"lastname": must be a valid string').notNull();
@@ -148,8 +148,8 @@ exports.update = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.remove = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('userid', '"userid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('userid', '"userid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		userid;

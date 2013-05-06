@@ -17,9 +17,11 @@ var bPrefix = "gitification_"; // set a prefix for all the bucket used by this a
 function magicCheck(callback, err, result, meta) {
 	if (err !== null) {
 		callback.error(err.statusCode, meta);
+		return;
 	}
-	else {
+	if (result && result !== null) {
 		callback.send(result);
+		return;
 	}
 }
 
@@ -41,7 +43,7 @@ exports.findApplicationById = function (app, callback) {
 };
 
 exports.createApplication = function (input, callback) {
-	var app, statistics;
+	var app = {}, statistics = {}, payload = {};
 	app.application_id = shortid.generate();
 	app.site = input.site;
 	app.callback = input.callback;
@@ -56,8 +58,10 @@ exports.createApplication = function (input, callback) {
 	};
 	app.statistics = statistics;
 
+	payload = {'application_id': app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"};
+
 	rc.save(bPrefix + "application", app.application_id, app, function (/*err, result, meta*/) {
-		callback.success(201, "Successfully registered.", {'application_id': app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"});
+		callback.success(201, "Successfully registered.", payload);
 	});
 };
 
@@ -65,327 +69,351 @@ exports.createApplication = function (input, callback) {
 ////////////////////////////////////////////////////////////////////////////////////
 // Leaderboard
 ////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findLeaderboard = function () {
-	return [
-		{
-			position: 1,
-			user_id: 0,
-			login: "gpap",
-			firstname: "geoffrey",
-			lastname: "papaux",
-			email: "geoffrey.papaux@master.hes-so.ch",
-			statistics:
-			{
-				badge_count: 1,
-			}
-		}
-	];
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Users
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllUsers = function () {
-	return [
-		{
-			user_id: 1,
-			login: "gpap",
-			firstname: "geoffrey",
-			lastname: "papaux",
-			email: "geoffrey.papaux@master.hes-so.ch"
-		},
-		{
-			user_id: 2,
-			login: "vgri",
-			firstname: "Vincent",
-			lastname: "Grivel",
-			email: "vincent.grivel@master.hes-so.ch"
-		}
-	];
-};
-*/
-/*
-exports.findUserById = function (userid) {
-	return {
-		user_id:  userid,
-		login: "gpap",
-		firstname: "geoffrey",
-		lastname: "papaux",
-		email: "geoffrey.papaux@master.hes-so.ch"
-	};
-};
-*/
 
-exports.findUserBadgesByUserId = function (userid) {
-	return {
-		user_id: userid,
-		badges_list:
-		[
-			{
-				badge_name: "super hero"
-			}
-		]
+///**
+// *
+// * @param app
+// * @param callback
+// */
+//exports.findLeaderboard = function (app, callback) {
+//	callback.send([
+//		{
+//			position: 1,
+//			user_id: 0,
+//			login: "gpap",
+//			firstname: "geoffrey",
+//			lastname: "papaux",
+//			email: "geoffrey.papaux@master.hes-so.ch",
+//			statistics: {
+//				badge_count: 1
+//			}
+//		}
+//	]);
+//};
 
-	};
+//////////////////////////////////////////////////////////////////////////////////////
+//// Users
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllUsers = function (app, callback) {
+	rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
 };
 
 /**
- * save a new user.
- * returns the userid
+ *
+ * @param user
+ * @param callback
  */
- /*
-exports.createUser = function (login, firstname, lastname, email) {
-	var userid = 3;
+exports.findUserById = function (user, callback) {
+	rc.get(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
 
-	console.log("Create user {" + login + ", " + firstname + ", " +
-		lastname + ", " + email + "}");
+///**
+// *
+// * @param user
+// * @param callback
+// */
+//exports.findUserBadgesByUserId = function (user, callback) {
+//	callback.send({
+//		user_id: user.user_id,
+//		badges_list: [
+//			{
+//				badge_id: 1,
+//				category_id: 1,
+//				name: "Super hero",
+//				icon: "blu.png"
+//			}
+//		]
+//	});
+//};
 
-	return userid;
-};
-*/
-
-/*
-exports.updateUser = function (userid, login, firstname, lastname, email) {
-	console.log("Update user {" + userid + ", " + login + ", " + firstname + ", " +
-		lastname + ", " + email + "}");
-	return true;
-};
-*/
-/*
-exports.deleteUser = function (userid) {
-	console.log("Delete user {" + userid + "}");
-	return true;
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Events
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllEvents = function () {
-	return [
-		{
-			event_id: 1,
-			type: 1,
-			user: 1,
-			issued: "2013-03-24"
-		}
-	];
-};
-*/
-/*
-exports.findEventById = function (eventid) {
-	return {
-		event_id: eventid,
-		type: 1,
-		user: 1,
-		issued: "2013-03-24"
-	};
-};
-*/
 /**
- * save a new event
- * Return the event id
+ *
+ * @param user
+ * @param callback
  */
-/*
-exports.createEvent = function (type, user, issued) {
-	var eventid = 3;
+exports.createUser = function (user, callback) {
+	var payload = {};
+	user.user_id = shortid.generate();
+	payload.user_id = user.user_id;
+	rc.save(bPrefix + "user" + user.application_id, user.user_id, user, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "	Successfully created user", payload);
+	});
+};
 
-	console.log("Create event {" + type + ", " + user + ", " + issued + "}");
-
-	return eventid;
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Event Types
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllEventTypes = function () {
-	return [
-		{
-			type_id: 1,
-			name: "commits"
-		}
-	];
-};
-*/
-/*
-exports.findEventTypeById = function (eventtypeid) {
-	return {
-		type_id: eventtypeid,
-		name: "commits"
-	};
-};
-*/
 /**
- * save a new event type
- * Return the event type id
+ *
+ * @param user
+ * @param callback
  */
-/*
-exports.createEventType = function (event_type_name) {
-	var event_type_id;
+exports.updateUser = function (user, callback) {
+	rc.save(bPrefix + "user" + user.application_id, user.user_id, user, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "User was updated.", user);
+	});
+};
 
-	console.log("Create event type {" + event_type_name + "}");
-	event_type_id = 3;
-
-	return event_type_id;
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Rules
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllRules = function () {
-	return [
-		{
-			rule_id: 1,
-			name: "sample rule",
-			badge: 1,
-			event_types:
-			[
-				{
-					event_type: 1,
-					threshold: 10
-				}
-			]
-		}
-	];
-};
-*/
-/*
-exports.findRuleById = function (ruleid) {
-	return {
-		rule_id: ruleid,
-		name: "sample rule",
-		badge: 1,
-		event_types:
-		[
-			{
-				event_type: 1,
-				threshold: 10
-			}
-		]
-	};
-};
-*/
 /**
- * save a new rule
- * Return the rule id
+ *
+ * @param user
+ * @param callback
  */
-/*
-exports.createRule = function (name, badge, event_types) {
-	var ruleid;
+exports.deleteUser = function (user, callback) {
+	rc.remove(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "Successfully deleted user", user);
+	});
+};
 
-	console.log("Create rule {" + name + ", " + badge + ", " + event_types + "}");
-	ruleid = 3;
+//////////////////////////////////////////////////////////////////////////////////////
+//// Events
+//////////////////////////////////////////////////////////////////////////////////////
 
-	return ruleid;
-};
-*/
-/*
-exports.updateRule = function (ruleid, name, badge, event_types) {
-
-	console.log("Update rule {" + ruleid + ", " + name + ", " +
-			badge + ", " + event_types + "}");
-
-	return true;
-};
-*/
-/*
-exports.deleteRule = function (ruleid) {
-	console.log("Delete rule {" + ruleid + "}");
-	return true;
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Badges
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllBadges = function () {
-	return [
-		{
-			badge_id: 1,
-			category_id: 1,
-			name: "bitcoin addicted",
-			icon: "img/badge/bitcoin.png"
-		}
-	];
-};
-*/
-/*
-exports.findBadgeById = function (badgeid) {
-	return {
-		badge_id: badgeid,
-		category_id: 1,
-		name: "bitcoin addicted",
-		icon: "img/badge/bitcoin.png"
-	};
-};
-*/
 /**
- * save a new badge
- * Return the badge id
+ *
+ * @param callback
  */
-/*
-exports.createBadge = function (name, icon, category_id) {
-	var badgeid;
-
-	console.log("Create badge {" + name + ", " + icon + ", " + category_id + "}");
-
-	badgeid = 3;
-	return badgeid;
+exports.findAllEvents = function (app, callback) {
+	rc.getAll(bPrefix + "event" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
 };
-*/
-/*
-exports.updateBadge = function (badgeid, name, icon, category_id) {
 
-	console.log("Update badge {" + badgeid + ", " + name + ", " +
-			icon + ", " + category_id + "}");
-
-	return true;
-};
-*/
-////////////////////////////////////////////////////////////////////////////////////
-// Badge Categories
-////////////////////////////////////////////////////////////////////////////////////
-/*
-exports.findAllBadgeCategories = function () {
-	return [
-		{
-			category_id: 1,
-			name: "category name"
-		}
-	];
-};
-*/
-/*
-exports.findBadgeCategoryById = function (categoryid) {
-	return {
-		category_id: categoryid,
-		name: "category name"
-	};
-};
-*/
 /**
- * save a new badge
- * Return the badge id
+ *
+ * @param event
+ * @param callback
  */
-/*
-exports.createBadgeCategory = function (name) {
-	var categoryid;
-
-	console.log("Create badge category {" + name + "}");
-
-	categoryid = 3;
-	return categoryid;
+exports.findEventById = function (event, callback) {
+	rc.get(bPrefix + "event" + event.application_id, event.event_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
 };
-*/
-/*
-exports.updateBadge = function (categoryid, name) {
 
-	console.log("Update badge category {" + categoryid + ", " + name + "}");
-
-	return true;
+/**
+ *
+ * @param event
+ * @param callback
+ */
+exports.createEvent = function (event, callback) {
+	event.event_id = shortid.generate();
+	rc.save(bPrefix + "event" + event.application_id, event.event_id, event, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "Successfully created event", event);
+	});
+	
 };
-*/
+
+//////////////////////////////////////////////////////////////////////////////////////
+//// Event Types
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ * @param callback
+ */
+exports.findAllEventTypes = function (app, callback) {
+	rc.getAll(bPrefix + "eventType" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ *
+ * @param eventtype
+ * @param callback
+ */
+exports.findEventTypeById = function (eventtype, callback) {
+	rc.get(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ * Saves a new event type
+ * @param eventtype
+ * @param callback
+ */
+exports.createEventType = function (eventtype, callback) {
+	eventtype.type_id = shortid.generate();
+	rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, event, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "Successfully created event", eventtype);
+	});
+	
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+//// Rules
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllRules = function (app, callback) {
+	rc.getAll(bPrefix + "rule" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.findRuleById = function (rule, callback) {
+	rc.get(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ * Saves a new rule
+ * @param rule
+ * @param callback
+ */
+exports.createRule = function (rule, callback) {
+	rule.rule_id = shortid.generate();
+	rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, event, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "Successfully created rule", rule);
+	});
+};
+
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.updateRule = function (rule, callback) {
+	rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, rule, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "Successfully updated rule", rule);
+	});
+};
+
+/**
+ *
+ * @param rule
+ * @param callback
+ */
+exports.deleteRule = function (rule, callback) {
+	rc.remove(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "Successfully deleted rule", rule);
+	});
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+//// Badges
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllBadges = function (app, callback) {
+	rc.getAll(bPrefix + "badge" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ *
+ * @param badge
+ * @param callback
+ */
+exports.findBadgeById = function (badge, callback) {
+	rc.get(bPrefix + "badge" + badge.application_id, badge.badge_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ * Saves a new badge
+ * @param badge
+ * @param callback
+ */
+exports.createBadge = function (badge, callback) {
+	badge.badge_id = shortid.generate();
+	rc.save(bPrefix + "badge" + badge.application_id, badge.badge_id, event, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "Successfully created badge", badge);
+	});
+};
+
+/**
+ *
+ * @param badge
+ * @param callback
+ */
+exports.updateBadge = function (badge, callback) {
+	rc.save(bPrefix + "badge" + badge.application_id, badge.badge_id, badge, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "Badge was updated.", badge);
+	});
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+//// Badge Categories
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ *
+ * @param app
+ * @param callback
+ */
+exports.findAllBadgeCategories = function (app, callback) {
+	rc.getAll(bPrefix + "badgeCategory" + app.application_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ *
+ * @param category
+ * @param callback
+ */
+exports.findBadgeCategoryById = function (category, callback) {
+	rc.get(bPrefix + "badgeCategory" + category.application_id, category.category_id, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+	});
+};
+
+/**
+ * Saves a new badge category
+ * @param category
+ * @param callback
+ */
+exports.createBadgeCategory = function (category, callback) {
+	category.category_id = shortid.generate();
+	rc.save(bPrefix + "badgeCategory" + category.application_id, category.category_id, event, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(201, "Successfully created badge category", category);
+	});
+};
+
+/**
+ *
+ * @param category
+ * @param callback
+ */
+exports.updateBadgeCategory = function (category, callback) {
+	rc.save(bPrefix + "badgeCategory" + category.application_id, category.category_id, category, function (err, result, meta) {
+		magicCheck(callback, err, result, meta);
+		callback.success(200, "Successfully updated badge category", category);
+	});
+};

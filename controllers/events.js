@@ -14,7 +14,7 @@ var db,
  * @param next facilitate restify function chaining
  */
 exports.findAll = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid;
 	if (errors) {
@@ -33,8 +33,8 @@ exports.findAll = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.findById = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('eventid', '"eventid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('eventid', '"eventid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		eventid;
@@ -55,9 +55,9 @@ exports.findById = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.create = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('type', '"type": must be a valid identifier').isInt();
-	req.check('user', '"user": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('type', '"type": must be a valid identifier').notNull();
+	req.check('user', '"user": must be a valid identifier').notNull();
 	req.check('issued', '"date": must be a valid date').isDate();
 	var errors = req.validationErrors(),
 		appid,

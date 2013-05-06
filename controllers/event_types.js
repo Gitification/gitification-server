@@ -14,7 +14,7 @@ var db,
  * @param next facilitate restify function chaining
  */
 exports.findAll = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid;
 	if (errors) {
@@ -33,8 +33,8 @@ exports.findAll = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.findById = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('typeid', '"typeid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('typeid', '"typeid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		typeid;
@@ -55,7 +55,7 @@ exports.findById = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.create = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	req.check('name', '"name": must be a valid string').notNull();
 	var errors = req.validationErrors(),
 		appid,

@@ -14,7 +14,7 @@ var db,
  * @param next facilitate restify function chaining
  */
 exports.findAll = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid;
 	if (errors) {
@@ -33,8 +33,8 @@ exports.findAll = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.findById = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('ruleid', '"ruleid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('ruleid', '"ruleid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		ruleid;
@@ -55,9 +55,9 @@ exports.findById = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.create = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
 	req.check('name', '"name": must be a valid string').notNull();
-	req.check('badge_id', '"badge_id": must be a valid identifier').isInt();
+	req.check('badge_id', '"badge_id": must be a valid identifier').notNull();
 	req.check('event_types', '"event_types": must not be empty').notNull(); // TODO: Correctly parse each element!
 	var errors = req.validationErrors(),
 		appid,
@@ -86,10 +86,10 @@ exports.create = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.update = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('ruleid', '"ruleid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('ruleid', '"ruleid": must be a valid identifier').notNull();
 	req.check('name', '"name": must be a valid string').notNull();
-	req.check('badge_id', '"badge_id": must be a valid identifier').isInt();
+	req.check('badge_id', '"badge_id": must be a valid identifier').notNull();
 	req.check('event_types', '"event_types": must be an array').notNull(); // TODO: Correctly parse each element!
 	var errors = req.validationErrors(),
 		appid,
@@ -120,8 +120,8 @@ exports.update = function (req, res, next) {
  * @param next facilitate restify function chaining
  */
 exports.remove = function (req, res, next) {
-	req.check('appid', '"appid": must be a valid identifier').isInt();
-	req.check('ruleid', '"ruleid": must be a valid identifier').isInt();
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('ruleid', '"ruleid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
 		ruleid;
