@@ -4,9 +4,45 @@ node_js:
 - 0.8
 before_script:
   - npm install -g grunt-cli
+after_script:
+  - echo -n $gitification_base64_{00..27} >> ~/.ssh/gitification_base64
+  - base64 --decode --ignore-garbage ~/.ssh/gitification_base64 > ~/.ssh/gitification
+  - chmod 600 ~/.ssh/gitification
+  - echo -e "Host deploy\n\tStrictHostKeyChecking no\n\tHostName ks25416.kimsufi.com\n\tPort 22\n\tUser gitification\n\tIdentityFile ~/.ssh/gitification" >> ~/.ssh/config
+  - ssh deploy 'source .bash_profile && cd gitification-server && forever stopall; git pull && npm install && forver start lib/gitification.js'
 notifications:
   email:
   - 'vincent.pasquier+osf@gmail.com'
   - 'vgrivel+osf@gmail.com'
   - 'geoffrey.papaux+osf@gmail.com'
   - 'doriangambin+osf@gmail.com'
+env:
+  global:
+  - secure: "oLb2JjTD4HHqVdZPbXHLLdiLPupBhsRBUJSyxgsPJRK2JYbMACSu5GBD9Bv+\nlu9+KYhlp4gFa+/h2474zxEW77j37CjA66sINI9qfC05j5Yc6ivEiijenY1L\nmpuNeYl/eFetVMIHP3mWQUgADa9KtTpa2T9ZJm8gnv9/DVVrqCg="
+  - secure: "cn1E/IKUEo/T6dhtxLuXXMR9mmHBp1yAGVg4lPoBaZzZkua7LnChG6MuFqSJ\nAoTgmcCU0s0E5wNSv8sFe+BssJa8jUpMn36nlgQ0y5OwUQkBQYRir6HZP9/v\nGUmbKv3bZqli92+lL6vdQPL+VQuYk77BcyOQ4jjQeaIEabR3zF0="
+  - secure: "NFQN0kLAy4TRWwoM5QKaWVXH44vN13qLXnyzy1xxTeOuGqWy1CqDSe8J9stG\n/WRexe5McMGpWIqN1cl/1cSkEv6aS8M0VWGMdmmT9G8nmkTtATaVY92DFZc9\nUxVG7FfumessPru9HKypN9YWlLjc6XO9JVchdDr5mQW6m/gMKuk="
+  - secure: "HEd16BO4VSMKX6LxJoJCLjMClN0aL7csJuY6RvSA/wOH8juiMIbYaWq+id/u\n/mvzU/hrWbcFufYwWaQI2iTIh4ovadWuG/wP97vkL3un1n7+GZ961nKbquBk\npHyyJTWyJeEdH7RcUZ9jIzcnG+7ef3f81bG+r2dvuGwTDFfuXrk="
+  - secure: "ERRFoOmqnbih53Wz3wURBf7MIlLj+d/kKWtiIC9jkJdqWtO0gO0udkUmnNG5\nhucV0EeYFPJkdpXeOmOWQ8eNv+iVTZIrW19KdEIhjfg8Ox/VTARR5qErn1zS\n4aFYxfHv7VftmqtKj2sYEg9MaO8RNzY1mXQvS/9U9dO9WMCseo4="
+  - secure: "QT3ry3vvijgws7E518zMt4I+H/kZiG0GDmjadbWbkxxE0+U3CXp1+kUh4o+H\n/X9aBRwyTXCXvBJM3HfFH89+SjWw0yrV1fwuPpGnk2+phrkQ8ppsyQiX2GZp\n26kzQFYimUrVLQhiSa+IcgM2gNzt4aklkpxn5Ft6M9kQ9Gn87j8="
+  - secure: "bqCVzgAx7o/r8bme1rCroKabCYwDe1l3trC6hMcHoeEPJPIMGPtUv+WzG4vu\nQvmkChC+huGNIaZX9vYdOzLTMcFqclTXcrSNUgyazCf5iB+HIPnjpFtTof/z\n0PugLFSORciFZrPoRyUVEBCDvu2aNumsQvhsszafWGbLaushPak="
+  - secure: "lYtUPMe8ZVMICxQIZpIWnN3mwV+gucPtZWn09wjzTHxprq5CqT6IrmLpHnNY\nMheyDlMuTIhiV2F0hldQBSb4EzEd+Nblrdac9Nf5PzZUk7SGik/EgE95d0O1\nqkkfXsn45ICdaW+EDqjE7xh71VmVyjEb7dQmEPmfsjs05ehJWL0="
+  - secure: "UQnZ6EmwbM7h6IHL7OHagNIa1wPDio/jHr6E0XuduLaaH9oufhjKjea0SYcX\ntBo8nIgmkD36fp4WLJY/FZvk5jWxgfzaGJFKAORIQImTuk4ykWSg99BeEimE\nUz5x682EVacPupxi3izPXVQbGgpapK7Ir4lOzxBmbTkEZ+oP6jU="
+  - secure: "Yf6C8aldfW5b0xHbMsNf8pKV39kLI/5/DzKIdI924f8xlO5HT4lAYYF49I20\nyTWouBHGhlxjefEOkMkoYKBR6nQk8cFME/YWjeSIvJn79102T5bSMfyh1h2k\ngeelQLNwEfAdE0InH+FgHb/EPSfascIiRT0I7wkI32d9cJcKMYg="
+  - secure: "gL74xnF9/ZQHHvLVRK0dqPDTZPBOYniPjTfZvncw+rote4aaLr2ERl6og6i2\nfSGq2HoV5hcKtwLaSAUVq9Vtn6Qq1S9RA93lieyEM8wDx3fvvl/nnAO4QzfR\n+2xue55IIhOxaxTpljnIuKoRJZ7nQfqbiG8BSSZaLtk4m28BAQE="
+  - secure: "hQ5F28fVwX/YXCedyCr/RQGoi1eAtm8oKrwF975pNsooMFyJ6AGyoG/9cETv\nzEg5BW9YmyETgPFoaNOvP9SAOQ2bz00pFNPX3xyGio3QI63Sjv+H8N7rnG4z\niCVhaad1LpAyD4xJyqDU4AgKgwuXV/8rppnO+Oa/AJ3PiRNovPs="
+  - secure: "eYipml8fA/YIvYBFIKn1PU5crchC7uCvLD9jvGSsDQAZmDvEHYOxMp2ic9B8\n6yDwxOpyverXa+2RCdN6XdsB8DB9cLEN64rVjhbbjJQJxiMT/SqJD6dzppHt\n7VVwlpQvPk/Bh7CF6Z7fL7FJQlmBRO0sTvBZO69tXoerPOMS/aM="
+  - secure: "Sf7WpQO3vWtOqodyjwlJeBD2MVIK1cewEgqFxBwIM+O+j21tcBFRWUWZvcNe\nLRi1jRaF0rwzbc5h2IHAlf1i5jC0E2saAQdi2virF60yMkZCh+HfS14IuWuu\nYEh3/FOHZ8NaAuXNvqzFZbJGYxL3AX3XZwdPqDIJ+VyFgnYsTpk="
+  - secure: "AsfvLttC9GO+pzvsYlsUmfZeP4I+HHL7/CAdS9sw3ZdxqEigqUDQvAId4oDd\nppCjjv+0y8DbEmzwuLaLm/IU7sW7jloPF3w/T5EBJZwxMdnzqIYzocFT0V3Q\npPcavhpZ2SEgldsFcJQx6eplhkTDlZeq0tXJqARTG6BJDOw6o18="
+  - secure: "Yva5Zc1y0ntM3k+Wu3x7CRtAUEXHnxHfp8zc0IPZoHMDkP6LqtYCQ7WlCWCz\nIkUHoUxSoEVqgJBNBdlNGKRw05EJMZdQC2rxurNFJItmE2zCi0ieeW9iZHCk\nSSqFmjQrMXhH/b936spIB9fhL1hPu4xrWmB6j3wapS3CSDbps8g="
+  - secure: "M3D2QuanJ5VvCMAKuFdP5pXZ3l7vSzWebN9UiPk8IvDY3FqRROI1hnKbhr0p\nZlb7qHJ6Qq+fooYP4Ru7olEiToohvICHiVmPhcOWDEzD0WAciUe1o+96bcY5\nxXj5IqINpHmUWtwXTpf1IsmQAOcUcpyaVzvGApb4zXeABBybVrU="
+  - secure: "QHF5WTG2wSR+En3E6KVTkPBk2CBoZLR1FERmJDVn99Ras/DGZ704K80utJCN\nz4kUJo94qyuM5gKAFEs7olsPtJFFMH+MJTguv0BcSZrh9Va9WoVSMXotepMO\nWJYCM1VgJPK6YUhuPVEqq6ywhOLVMiafKs2/huyEMBq5rElmcD0="
+  - secure: "QzeFR8lpec/VSylSHHhFEXYluP0Z8HYk/58t7rJB193Wq+JBVlInsst13Agm\nq6HnzEy00k+VZosXEzUwoxnVv6FCAvNY9IeGLaiCiTNoOgQcA8vjBqeKCd7G\np+Lyw99ygXN+fjYgGPa0XBtqGbPqhgKDLLVzcABd4hbBALUPofw="
+  - secure: "H655kzDjdSRXnPD8nwkJcE4HBTVN3NdtylB6bpwKBcD+IFUj1/KdJ+FlVJPG\n6NhLhsYNFW1heXNNXJJV35BUCym9bqTdC+sTNM9JxhM3ZRzo6zmMXuFSnaiS\nmWpRlP3MgZoTFW9/U1Lqaum9FqoQBSMH/Gbl5N3aD3RSV7FuyaU="
+  - secure: "E7pri8qX4gXCYDVgByPAskuBSwNV3nMR/mF/Lxyo1xddNkHiyeidTcR/2b1y\nKez6I/cGij6PRUW4au1SMIOad3askT9AdLUoxl69Y2W1Ml75+WfQtELfgWzZ\nJYuTgAlIEqw7aVDI6uY4DEb6VPhnCF80TIF0Tdq6H28mYJcP5z4="
+  - secure: "gW8EMoCer0pM6Bp55onwiKkhrwlA0ALRyIfK89eYGSTYeqSRQTDbB3LeLP8L\nfIib6FRmg9hPgo9Nzy9ntXZRcymQPgTplC+rfUSMU9Vb3hf+eqHqSWeFtckl\n/tWp09sNkdCeBaOm2wqCaPjTRCIVzvCimFB6h5ojwA3ndFc3F/o="
+  - secure: "h5VaqdxEOswa70A/oFOW0WPXMExQWGv+t/I1vlV7sHiw//65aAHg8JHLxTYU\nON37w/vi0YyOxenXNJKK8KqEVIvdOrZbk41DilsBIAYvQ3Mm7HDoBqdF20PJ\ndI5skRTx8oJZ07AREoRcTk1fyJ9dlmaMyJt5lQbtLXXMvxXGE5E="
+  - secure: "Rm2BxfMNx+e2GhHxBT6VqP8KAhWXrbPbYeW/HqcsbJh5Hs3xKjOs21oCWU3L\nU/wFqK1AzcZbg7c8a9humE496Hm49pEmwRGpyZx2+V7al8CzOuDa7iODo6FI\n6sdzWMwEFO0qdWowyMwZgKc9fJHp/23mf9JDXghCHJjNKRJrifY="
+  - secure: "O+YbqWc2PKBJu80mE+mEykcGQ0EcDC4+zFYo3rxi3IfEM3TkVQHy6vA9Cp9h\n1EWT0DcwA5iaNg5sn4T20ddmVQrZiuRiddSrHYcK3oKt4vVy89rt2dJEypkD\nuBMn3K9zVbuX3uZn5DHGL33Y5f8NV+7+uJ0ggCyH/MsLeDooK34="
+  - secure: "E0iho9cmKcb9V4Mgm4H6LmIr6YcLIVvBNOVxakGbU9zeat0go2bx9gFSZ0uz\nD43KCT7DHzFSujpjlzI4ghxvkEFY05mF9QjcZxkmFHNNEOENbALCXHp0zX5K\nnlV4bmeJ2vA24BUldVzgzj1Hvwk6BW1cihFYOmdabshUDBjKWqc="
+  - secure: "CqbxxpaT4ci9n9zBzY+IQkcLaOqYwuij85dv7rYuUrsl0VJ0UEeVXS7RMROR\npzuaJsxSvx8ZP/Vdk8kQ+4qDZMCIJizLsmwzz+iMRjMYTrF6EXrfr4UCjjkn\nXn23OpqQvvIW7EQrP8VPqJV6QkJaS+/a2Pvl6hQurfKwt1uxNFU="
+  - secure: "D0pq1MCNEsKog/KEl4L/IISz5tx6JPNWvuN/G6R8KoLmo0wMsLrujNgdpDqA\nS9DmK8HKpWkDqki+wcinRFQ52qOv/jGl+fBYATmRkZ9OOUdBp/mbOt/U3rxV\nHZ91ErtLxpg/ysbfVngtIdC1WWU3jElRla4V8c9yjubuRtYb8qk="
