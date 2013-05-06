@@ -9,7 +9,8 @@ after_script:
   - base64 --decode --ignore-garbage ~/.ssh/gitification_base64 > ~/.ssh/gitification
   - chmod 600 ~/.ssh/gitification
   - echo -e "Host deploy\n\tStrictHostKeyChecking no\n\tHostName ks25416.kimsufi.com\n\tPort 22\n\tUser gitification\n\tIdentityFile ~/.ssh/gitification" >> ~/.ssh/config
-  - ssh deploy 'source .bash_profile && cd gitification-server && forever stopall; git pull && npm install && forver start lib/gitification.js'
+  - ssh-add ~/.ssh/gitification
+  - ssh deploy 'source .bash_profile && cd gitification-server && forever stopall; git pull && npm install && forever start lib/gitification.js'
 notifications:
   email:
   - 'vincent.pasquier+osf@gmail.com'
