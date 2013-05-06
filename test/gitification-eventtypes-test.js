@@ -2,7 +2,7 @@
 
 // apieasy usage : http://blog.nodejitsu.com/rest-easy-test-any-api-in-nodejs
 
-require('../lib/gitification.js');
+var server = require('../lib/gitification.js');
 
 var APIeasy = require('api-easy');
 //assert = require('assert');
@@ -21,19 +21,19 @@ suite.discuss('When asking our API')
 		.discuss('the list of available event types')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/events/types')
+			.get(server.prefix + '/applications/1/events/types')
 			.expect(200)
 			.undiscuss()
 		.discuss('a specific event type')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/events/types/1')
+			.get(server.prefix + '/applications/1/events/types/1')
 			.expect(200)
 			.undiscuss()
 		.discuss('a specific event type but with invalid id value')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/events/types/asdf')
+			.get(server.prefix + '/applications/1/events/types/asdf')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
@@ -42,13 +42,13 @@ suite.discuss('When asking our API')
     .discuss('with valid parameters')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
-      .post('applications/1/events/types', {name: 'testlogin'})
+      .post(server.prefix + '/applications/1/events/types', {name: 'testlogin'})
       .expect(201)// TODO add content...
       .undiscuss()
     .discuss('with not all required parameters')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
-      .post('applications/1/events/types')
+      .post(server.prefix + '/applications/1/events/types')
       .expect(400)
       .undiscuss()
     .undiscuss()

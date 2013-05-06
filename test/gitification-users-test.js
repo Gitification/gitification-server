@@ -2,7 +2,7 @@
 
 // apieasy usage : http://blog.nodejitsu.com/rest-easy-test-any-api-in-nodejs
 
-require('../lib/gitification.js');
+var server = require('../lib/gitification.js');
 
 var APIeasy = require('api-easy');
 //assert = require('assert');
@@ -23,20 +23,19 @@ suite.discuss('When asking our API')
 		.discuss('the list of users')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/users/')
+			.get(server.prefix + '/applications/1/users/')
 			.expect(200)
 			.undiscuss()
 		.discuss('the details of an existing user')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/users/1')
+			.get(server.prefix + '/applications/1/users/1')
 			.expect(200)
 			.undiscuss()
-
 		.discuss('the details of a user with string as id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.get('applications/1/users/asdf')
+			.get(server.prefix + '/applications/1/users/asdf')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
@@ -45,7 +44,7 @@ suite.discuss('When asking our API')
 		.discuss('with valid parameters')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.post('applications/1/users/', {login: 'testlogin',
+			.post(server.prefix + '/applications/1/users/', {login: 'testlogin',
 																			firstname: 'testfirstname',
 																			lastname: 'testlastname',
 																			email: 'testemail@email.com'})
@@ -54,7 +53,7 @@ suite.discuss('When asking our API')
 		.discuss('with not all required parameters')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.post('applications/1/users/', {login: 'test'})
+			.post(server.prefix + '/applications/1/users/', {login: 'test'})
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
@@ -63,7 +62,7 @@ suite.discuss('When asking our API')
 		.discuss('with valid parameters')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.put('applications/1/users/1', {login: 'testlogin',
+			.put(server.prefix + '/applications/1/users/1', {login: 'testlogin',
 																			firstname: 'testfirstname',
 																			lastname: 'testlastname',
 																			email: 'testemail@email.com'})
@@ -84,7 +83,7 @@ suite.discuss('When asking our API')
 		.discuss('with not all parameters')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.put('applications/1/users/1', {login: 'test',
+			.put(server.prefix + '/applications/1/users/1', {login: 'test',
 																			firstname: 'testfirstname'})
 			.expect(400)
 			.undiscuss()
@@ -94,13 +93,13 @@ suite.discuss('When asking our API')
 		.discuss('with valid parameter')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.del('applications/1/users/1')
+			.del(server.prefix + '/applications/1/users/1')
 			.expect(200)
 			.undiscuss()
 		.discuss('with string as id instead of integer')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
-			.del('applications/1/users/asdf')
+			.del(server.prefix + '/applications/1/users/asdf')
 			.expect(400)
 			.undiscuss()
 		.undiscuss()
