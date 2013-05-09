@@ -75,19 +75,43 @@ exports.createApplication = function (input, callback) {
  * @param callback
  */
 exports.findLeaderboard = function (app, callback) {
-	callback.send([
-		{
-			position: 1,
-			user_id: 0,
-			login: "gpap",
-			firstname: "geoffrey",
-			lastname: "papaux",
-			email: "geoffrey.papaux@master.hes-so.ch",
-			statistics: {
-				badge_count: 1
-			}
-		}
-	]);
+	var board = [], dasUser = {};
+
+	rc.count(bPrefix + "user" + app.application_id, function (err, count, meta) {
+		console.log(count);
+
+		rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
+			if (magicCheck(callback, err, result, meta)) { return; }
+			for (var i = 0; i < count; i++) {
+				var user = result[i];
+				dasUser = user;
+				
+				rc.walk(bPrefix + "user" + app.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
+					if (result.length > 1) { console.log("error 42, ask perdjesk"); }
+					dasUser.statistics = {};
+					dasUser.statistics.badge_count = result[0].length;
+					board[i] = dasUser;
+					var sum = count-1;
+					console.log(i);
+					if (i === count-1) callback.send(board);				
+				});		
+			}	
+		});
+	});
+
+//	callback.send([
+//		{
+//			position: 1,
+//			user_id: 0,
+//			login: "gpap",
+//			firstname: "geoffrey",
+//			lastname: "papaux",
+//			email: "geoffrey.papaux@master.hes-so.ch",
+//			statistics: {
+//				badge_count: 1
+//			}
+//		}
+//	]);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +125,7 @@ exports.findLeaderboard = function (app, callback) {
  */
 exports.findAllUsers = function (app, callback) {
 	rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -113,9 +137,8 @@ exports.findAllUsers = function (app, callback) {
  */
 exports.findUserById = function (user, callback) {
 	rc.get(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
-		console.log(meta);
 	});
 };
 
@@ -128,14 +151,14 @@ exports.findUserBadgesByUserId = function (user, callback) {
 	var payload = {}, i = 0;
 	payload.user_id = user.user_id;
 	payload.badges_list = [];
- 
-	console.log(user.user_id);
+
 	rc.walk(bPrefix + "user" + user.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
 		if (result.length > 1) { console.log("error 42, ask perdjesk"); }
 		if (result[0].length === 0) { callback.send(payload); }
 		
 		result[0].forEach(function (entry) {
 			payload.badges_list[i] = entry.data;
+			i++;
 		});
 		callback.send(payload);
 	});
@@ -151,7 +174,7 @@ exports.createUser = function (user, callback) {
 	user.user_id = shortid.generate();
 	payload.user_id = user.user_id;
 	rc.save(bPrefix + "user" + user.application_id, user.user_id, user, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "	Successfully created user", payload);
 	});
 };
@@ -163,7 +186,7 @@ exports.createUser = function (user, callback) {
  */
 exports.updateUser = function (user, callback) {
 	rc.save(bPrefix + "user" + user.application_id, user.user_id, user, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "User was updated.", user);
 	});
 };
@@ -175,7 +198,7 @@ exports.updateUser = function (user, callback) {
  */
 exports.deleteUser = function (user, callback) {
 	rc.remove(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "Successfully deleted user", user);
 	});
 };
@@ -190,7 +213,7 @@ exports.deleteUser = function (user, callback) {
  */
 exports.findAllEvents = function (app, callback) {
 	rc.getAll(bPrefix + "event" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -202,8 +225,7 @@ exports.findAllEvents = function (app, callback) {
  */
 exports.findEventById = function (event, callback) {
 	rc.get(bPrefix + "event" + event.application_id, event.event_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
-		console.log(meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -211,7 +233,6 @@ exports.findEventById = function (event, callback) {
 function existsAward(links, application_id, badge_id) {
 	var exists = false;
 	links.forEach(function (link) {
-		console.log(link.bucket ===  bPrefix + "badge" + application_id);
 		if (link.bucket ===  bPrefix + "badge" + application_id && link.key === badge_id && link.tag === "hasBadge") {
 			exists = true;
 			return false;
@@ -224,10 +245,8 @@ function awardBadge(callback, event, nbEvents, rules) {
 	var rule;
 	rules.forEach(function (entry) {
 		rule = entry.data;
-		console.log(rule.badge_id + "/" + nbEvents + "/" + rule.event_types[0].threshold);
 		if (nbEvents >= rule.event_types[0].threshold) {
 			rc.get(bPrefix + "user" + event.application_id, event.user, function (err, result, meta) {
-				console.log(meta.links);
 				if (existsAward(meta.links, rule.application_id, rule.badge_id)) { return; }
 				meta.links.push({ bucket: bPrefix + "badge" + rule.application_id, key: rule.badge_id, tag: 'hasBadge' });
 				rc.save(bPrefix + "user" + event.application_id, event.user, result, meta, function (err, result, meta) {
@@ -280,7 +299,7 @@ exports.createEvent = function (event, callback) {
  */
 exports.findAllEventTypes = function (app, callback) {
 	rc.getAll(bPrefix + "eventType" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -292,7 +311,7 @@ exports.findAllEventTypes = function (app, callback) {
  */
 exports.findEventTypeById = function (eventtype, callback) {
 	rc.get(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -305,7 +324,7 @@ exports.findEventTypeById = function (eventtype, callback) {
 exports.createEventType = function (eventtype, callback) {
 	eventtype.type_id = shortid.generate();
 	rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "Successfully created event", eventtype);
 	});
 	
@@ -322,7 +341,7 @@ exports.createEventType = function (eventtype, callback) {
  */
 exports.findAllRules = function (app, callback) {
 	rc.getAll(bPrefix + "rule" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -334,7 +353,7 @@ exports.findAllRules = function (app, callback) {
  */
 exports.findRuleById = function (rule, callback) {
 	rc.get(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -371,7 +390,7 @@ exports.createRule = function (rule, callback) {
  */
 exports.updateRule = function (rule, callback) {
 	rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, rule, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "Successfully updated rule", rule);
 	});
 };
@@ -383,7 +402,7 @@ exports.updateRule = function (rule, callback) {
  */
 exports.deleteRule = function (rule, callback) {
 	rc.remove(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "Successfully deleted rule", rule);
 	});
 };
@@ -399,7 +418,7 @@ exports.deleteRule = function (rule, callback) {
  */
 exports.findAllBadges = function (app, callback) {
 	rc.getAll(bPrefix + "badge" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -411,7 +430,7 @@ exports.findAllBadges = function (app, callback) {
  */
 exports.findBadgeById = function (badge, callback) {
 	rc.get(bPrefix + "badge" + badge.application_id, badge.badge_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -425,7 +444,7 @@ exports.createBadge = function (badge, callback) {
 	badge.badge_id = shortid.generate();
 
 	rc.save(bPrefix + "badge" + badge.application_id, badge.badge_id, badge, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "Successfully created badge", badge);
 	});
 };
@@ -437,7 +456,7 @@ exports.createBadge = function (badge, callback) {
  */
 exports.updateBadge = function (badge, callback) {
 	rc.save(bPrefix + "badge" + badge.application_id, badge.badge_id, badge, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "Badge was updated.", badge);
 	});
 };
@@ -453,7 +472,7 @@ exports.updateBadge = function (badge, callback) {
  */
 exports.findAllBadgeCategories = function (app, callback) {
 	rc.getAll(bPrefix + "badgeCategory" + app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -465,7 +484,7 @@ exports.findAllBadgeCategories = function (app, callback) {
  */
 exports.findBadgeCategoryById = function (category, callback) {
 	rc.get(bPrefix + "badgeCategory" + category.application_id, category.category_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -478,7 +497,7 @@ exports.findBadgeCategoryById = function (category, callback) {
 exports.createBadgeCategory = function (category, callback) {
 	category.category_id = shortid.generate();
 	rc.save(bPrefix + "badgeCategory" + category.application_id, category.category_id, category, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "Successfully created badge category", category);
 	});
 };
@@ -490,7 +509,7 @@ exports.createBadgeCategory = function (category, callback) {
  */
 exports.updateBadgeCategory = function (category, callback) {
 	rc.save(bPrefix + "badgeCategory" + category.application_id, category.category_id, category, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(200, "Successfully updated badge category", category);
 	});
 };
