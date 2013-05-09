@@ -13,6 +13,7 @@
 var rc = require('riak-js').getClient();
 var shortid = require('shortid');
 var bPrefix = "gitification_"; // set a prefix for all the bucket used by this application
+var async = require('async');
 
 function magicCheck(callback, err, result, meta) {
 	if (err !== null) {
@@ -75,43 +76,26 @@ exports.createApplication = function (input, callback) {
  * @param callback
  */
 exports.findLeaderboard = function (app, callback) {
-	var board = [], dasUser = {};
-
-	rc.count(bPrefix + "user" + app.application_id, function (err, count, meta) {
-		console.log(count);
-
-		rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
-			if (magicCheck(callback, err, result, meta)) { return; }
-			for (var i = 0; i < count; i++) {
-				var user = result[i];
-				dasUser = user;
-				
-				rc.walk(bPrefix + "user" + app.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
-					if (result.length > 1) { console.log("error 42, ask perdjesk"); }
-					dasUser.statistics = {};
-					dasUser.statistics.badge_count = result[0].length;
-					board[i] = dasUser;
-					var sum = count-1;
-					console.log(i);
-					if (i === count-1) callback.send(board);				
-				});		
-			}	
+	var board = [];
+	rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
+		if (magicCheck(callback, err, result, meta)) { return; }
+		var queue = async.queue(function (item, cbQueue) {
+			var cbWalk = cbQueue;
+			rc.walk(bPrefix + "user" + app.application_id, item.user_id, [{bucket: bPrefix + "badge" + item.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
+				item.statistics = {};
+				item.statistics.badge_count = result[0].length;
+				board.push(item);
+				cbWalk();
+			});
+		}, 10);
+ 
+		queue.drain = function () {
+			callback.send(board);
+		};
+		async.each(result, function (item) {
+			queue.push(item);
 		});
 	});
-
-//	callback.send([
-//		{
-//			position: 1,
-//			user_id: 0,
-//			login: "gpap",
-//			firstname: "geoffrey",
-//			lastname: "papaux",
-//			email: "geoffrey.papaux@master.hes-so.ch",
-//			statistics: {
-//				badge_count: 1
-//			}
-//		}
-//	]);
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -243,8 +227,10 @@ function existsAward(links, application_id, badge_id) {
 
 function awardBadge(callback, event, nbEvents, rules) {
 	var rule;
+	console.log(rules);
 	rules.forEach(function (entry) {
 		rule = entry.data;
+		console.log(nbEvents + "/" + rule.event_types[0].threshold);
 		if (nbEvents >= rule.event_types[0].threshold) {
 			rc.get(bPrefix + "user" + event.application_id, event.user, function (err, result, meta) {
 				if (existsAward(meta.links, rule.application_id, rule.badge_id)) { return; }
@@ -271,7 +257,7 @@ exports.createEvent = function (event, callback) {
 		rc.exists(bPrefix + "user" + event.application_id, event.user, function (err, result/*, meta*/)  {
 			if (!result) { callback.error(404, "User does not exist"); return; }
 
-			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, {index: event}, function (err, result, meta) {
+			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return; }
 				callback.success(201, "Successfully created event", event);
 								
@@ -312,6 +298,7 @@ exports.findAllEventTypes = function (app, callback) {
 exports.findEventTypeById = function (eventtype, callback) {
 	rc.get(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
+		console.log(meta);
 		callback.send(result);
 	});
 };
@@ -354,6 +341,7 @@ exports.findAllRules = function (app, callback) {
 exports.findRuleById = function (rule, callback) {
 	rc.get(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
+		console.log(meta);
 		callback.send(result);
 	});
 };
