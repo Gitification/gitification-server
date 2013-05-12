@@ -28,7 +28,7 @@ suite.discuss('When asking our API')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
 			.get(server.prefix + '/applications/1/badges/categories/asdf')
-			.expect(400)
+			.expect(200)
 			.undiscuss()
 		.undiscuss()
 	//// POST ////
