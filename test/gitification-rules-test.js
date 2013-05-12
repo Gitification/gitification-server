@@ -67,7 +67,7 @@ suite.discuss('When asking our API')
 																					threshold: '100'}
 																				]
 																			})
-      .expect(200)
+      .expect(201)
       .undiscuss()
     .undiscuss()
   //// PUT ////
