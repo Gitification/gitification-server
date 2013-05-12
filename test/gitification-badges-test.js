@@ -54,7 +54,7 @@ suite.discuss('When asking our API')
 			.post(server.prefix + '/applications/1/badges/', {	name: 'badgename',
 																				icon: 'http://badgeurl.url',
 																				category_id: 'asdf'})
-			.expect(200)
+			.expect(201)
 			.undiscuss()
 		.undiscuss()
 	//// PUT ////

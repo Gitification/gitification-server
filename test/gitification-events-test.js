@@ -51,7 +51,8 @@ suite.discuss('When asking our API')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
       .post(server.prefix + '/applications/1/events', {type: '1',
-																			user: 'asdf'})
+																			user: 'asdf',
+																			issued: '04-22-2013'})
       .expect(201)
       .undiscuss()
     .undiscuss()
