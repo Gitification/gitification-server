@@ -48,13 +48,13 @@ suite.discuss('When asking our API')
 																				category_id: '1'})
 			.expect(400)
 			.undiscuss()
-		.discuss('with bad category_id value')
+		.discuss('with alphanum category_id value')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
 			.post(server.prefix + '/applications/1/badges/', {	name: 'badgename',
 																				icon: 'http://badgeurl.url',
 																				category_id: 'asdf'})
-			.expect(400)
+			.expect(200)
 			.undiscuss()
 		.undiscuss()
 	//// PUT ////
@@ -86,13 +86,13 @@ suite.discuss('When asking our API')
 																				icon: 'http://badgeurl.url'})
 			.expect(400)
 			.undiscuss()
-		.discuss('with invalid category_id')
+		.discuss('with alphanum category_id')
 			.use('localhost', 8080)
 			.setHeader('Content-Type', 'application/json')
 			.put(server.prefix + '/applications/1/badges/1',	{name: 'newbadgename',
 																				icon: 'http://badgeurl.url',
 																				category_id: 'asdf'})
-			.expect(400)
+			.expect(200)
 			.undiscuss()
 		.undiscuss()
 	.export(module);

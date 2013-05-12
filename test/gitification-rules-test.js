@@ -57,7 +57,7 @@ suite.discuss('When asking our API')
 																			badge_id: '1'})
       .expect(400)
       .undiscuss()
-    .discuss('with badge as string instead of oid')
+    .discuss('with badge as string')
       .use('localhost', 8080)
       .setHeader('Content-Type', 'application/json')
       .post(server.prefix + '/applications/1/rules/', {name: 'rulename',
@@ -67,7 +67,7 @@ suite.discuss('When asking our API')
 																					threshold: '100'}
 																				]
 																			})
-      .expect(400)
+      .expect(200)
       .undiscuss()
     .undiscuss()
   //// PUT ////
