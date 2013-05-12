@@ -4,6 +4,19 @@ module.exports = function (grunt) {
 
   // Project configuration.
   grunt.initConfig({
+    env: {
+      options: {
+       //Shared Options Hash
+      },
+      dev: {
+        NODE_ENV: 'development',
+        DB: 'static'
+      },
+      build: {
+        NODE_ENV: 'production',
+        DB: 'riak'
+      }
+    },
     nodeunit: {
       files: ['test/**/*_test.js'],
     },
@@ -57,8 +70,9 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-vows-runner');
+  grunt.loadNpmTasks('grunt-env');
 
   // Default task.
   grunt.registerTask('default', ['jshint', 'nodeunit']);
-  grunt.registerTask('travis', ['jshint', 'vows']); // 'nodeunit',
+  grunt.registerTask('travis', ['env:dev', 'jshint', 'vows']); // 'nodeunit',
 };
