@@ -66,13 +66,6 @@ exports.createApplication = function (app, callback) {
 	callback.success(201, "Successfully registered.", {'api_key': "api_key", 'secret_key': "secret_key"});
 };
 
-exports.createApplication = function (/*site, callback, admin*/) {
-	var payload;
-	
-	payload = {api_key: "api-key", secret_key: "api-secret-key"};
-	return payload;
-};
-
 ////////////////////////////////////////////////////////////////////////////////////
 // Leaderboard
 ////////////////////////////////////////////////////////////////////////////////////
