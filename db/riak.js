@@ -17,6 +17,7 @@ var async = require('async');
 
 function magicCheck(callback, err, result, meta) {
 	if (err !== null) {
+		console.log(err);
 		callback.error(err.statusCode, meta);
 		return true;
 	}
@@ -29,7 +30,7 @@ function magicCheck(callback, err, result, meta) {
 
 exports.findAllApplications = function (callback) {
 	rc.getAll(bPrefix + "application", function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -37,7 +38,7 @@ exports.findAllApplications = function (callback) {
 
 exports.findApplicationById = function (app, callback) {
 	rc.get(bPrefix + "application", app.application_id, function (err, result, meta) {
-		magicCheck(callback, err, result, meta);
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.send(result);
 	});
 };
@@ -60,7 +61,8 @@ exports.createApplication = function (input, callback) {
 
 	payload = {'application_id': app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"};
 
-	rc.save(bPrefix + "application", app.application_id, app, function (/*err, result, meta*/) {
+	rc.save(bPrefix + "application", app.application_id, app, function (err, result, meta) {
+		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "Successfully registered.", payload);
 	});
 };
@@ -123,6 +125,7 @@ exports.findAllUsers = function (app, callback) {
 exports.findUserById = function (user, callback) {
 	rc.get(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
+		console.log(meta);
 		callback.send(result);
 	});
 };
@@ -140,7 +143,6 @@ exports.findUserBadgesByUserId = function (user, callback) {
 	rc.walk(bPrefix + "user" + user.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
 		if (result.length > 1) { console.log("error 42, ask perdjesk"); }
 		if (result[0].length === 0) { callback.send(payload); }
-		
 		result[0].forEach(function (entry) {
 			payload.badges_list[i] = entry.data;
 			i++;
@@ -228,20 +230,22 @@ function existsAward(links, application_id, badge_id) {
 
 function awardBadge(callback, event, nbEvents, rules) {
 	var rule;
-	console.log(rules);
+	//console.log(rules);	
 	rules.forEach(function (entry) {
 		rule = entry.data;
-		console.log(nbEvents + "/" + rule.event_types[0].threshold);
+		//console.log(nbEvents + "/" + rule.event_types[0].threshold);
 		if (nbEvents >= rule.event_types[0].threshold) {
 			rc.get(bPrefix + "user" + event.application_id, event.user, function (err, result, meta) {
 				if (existsAward(meta.links, rule.application_id, rule.badge_id)) { return; }
 				meta.links.push({ bucket: bPrefix + "badge" + rule.application_id, key: rule.badge_id, tag: 'hasBadge' });
 				rc.save(bPrefix + "user" + event.application_id, event.user, result, meta, function (err, result, meta) {
 					if (magicCheck(callback, err, result, meta)) { return; }
+					
 				});
 			});
 		}
 	});
+	callback.success(201, "Successfully created event", event);
 }
 
 /**
@@ -260,7 +264,7 @@ exports.createEvent = function (event, callback) {
 
 			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return; }
-				callback.success(201, "Successfully created event", event);
+				
 								
 				rc.mapreduce.add({bucket: bPrefix + "event" + event.application_id, "key_filters": [["and", [["tokenize", "-", 1], ["eq", event.type]], [["tokenize", "-", 2], ["eq", event.user]]]]}).map('Riak.mapValuesJson').run(function (err, events) {
 	
@@ -363,7 +367,7 @@ exports.createRule = function (rule, callback) {
 			rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, meta, function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return; }
 				rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, rule, function (err, result, meta) {
-					magicCheck(callback, err, result, meta);
+					if (magicCheck(callback, err, result, meta)) { return; }
 					callback.success(201, "Successfully created rule", rule);
 				});
 			});
