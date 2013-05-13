@@ -81,7 +81,7 @@ exports.findLeaderboard = function (app, callback) {
 	var board = [];
 	rc.getAll(bPrefix + "user" + app.application_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
-		if (result.length === 0) callback.send(board);
+		if (result.length === 0) { callback.send(board); }
 		var queue = async.queue(function (item, cbQueue) {
 			var cbWalk = cbQueue;
 			rc.walk(bPrefix + "user" + app.application_id, item.user_id, [{bucket: bPrefix + "badge" + item.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
@@ -230,7 +230,6 @@ function existsAward(links, application_id, badge_id) {
 
 function awardBadge(callback, event, nbEvents, rules) {
 	var rule;
-	//console.log(rules);	
 	rules.forEach(function (entry) {
 		rule = entry.data;
 		//console.log(nbEvents + "/" + rule.event_types[0].threshold);
