@@ -358,20 +358,39 @@ exports.findRuleById = function (rule, callback) {
 exports.createRule = function (rule, callback) {
 	rule.rule_id = shortid.generate();
 
-	rc.exists(bPrefix + "badge" + rule.application_id, rule.badge_id, function (err, result/*, meta*/) {
-		if (!result) { callback.error(404, "Badge does not exist"); return; }
-		rc.get(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, eventtype, meta) {
-			if (magicCheck(callback, err, eventtype, meta)) { return; }
-			meta.links.push({ bucket: bPrefix + "rule" + rule.application_id, key: rule.rule_id, tag: 'hasRule' });
-			rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, meta, function (err, result, meta) {
-				if (magicCheck(callback, err, result, meta)) { return; }
-				rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, rule, function (err, result, meta) {
-					if (magicCheck(callback, err, result, meta)) { return; }
-					callback.success(201, "Successfully created rule", rule);
+	async.series([
+		function (cb) {
+			rc.exists(bPrefix + "badge" + rule.application_id, rule.badge_id, function (err, result/*, meta*/) {
+				if (!result) { callback.error(404, "Badge does not exist"); cb("err"); }
+				cb();
+			});
+		},
+		function (cb) {
+			rc.exists(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, result/*, meta*/) {
+				if (!result) { callback.error(404, "Event type does not exist"); cb("err"); }
+				cb();
+			});
+		},
+		function (cb) {
+			rc.get(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, eventtype, meta) {
+				if (magicCheck(callback, err, eventtype, meta)) { cb("err"); }
+				meta.links.push({ bucket: bPrefix + "rule" + rule.application_id, key: rule.rule_id, tag: 'hasRule' });
+				rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, meta, function (err, result, meta) {
+					if (magicCheck(callback, err, result, meta)) { cb("err"); }
+					cb();
 				});
 			});
+		},
+		function (cb) {
+			rc.save(bPrefix + "rule" + rule.application_id, rule.rule_id, rule, function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { cb("err"); }
+				cb();
+			});
+		}
 
-		});
+	], function (err) {
+		if (err) { return; }
+		callback.success(201, "Successfully created rule", rule);
 	});
 };
 
