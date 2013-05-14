@@ -17,6 +17,7 @@ var async = require('async');
 
 function magicCheck(callback, err, result, meta) {
 	if (err !== null) {
+		console.log("error riak");
 		console.log(err);
 		callback.error(err.statusCode, meta);
 		return true;
@@ -217,10 +218,10 @@ exports.findEventById = function (event, callback) {
 	});
 };
 
-function existsAward(links, application_id, badge_id) {
+function existsLink(links, link) {
 	var exists = false;
-	links.forEach(function (link) {
-		if (link.bucket ===  bPrefix + "badge" + application_id && link.key === badge_id && link.tag === "hasBadge") {
+	links.forEach(function (item) {
+		if (item.bucket === link.bucket && item.key === link.key && item.tag === link.tag) {
 			exists = true;
 			return false;
 		}
@@ -228,23 +229,30 @@ function existsAward(links, application_id, badge_id) {
 	return exists;
 }
 
+
 function awardBadge(callback, event, nbEvents, rules) {
-	var rule;
-	rules.forEach(function (entry) {
-		rule = entry.data;
-		//console.log(nbEvents + "/" + rule.event_types[0].threshold);
+	var rule, link;
+	async.eachSeries(rules, function (item, cb) {
+		rule = item.data;
 		if (nbEvents >= rule.event_types[0].threshold) {
 			rc.get(bPrefix + "user" + event.application_id, event.user, function (err, result, meta) {
-				if (existsAward(meta.links, rule.application_id, rule.badge_id)) { return; }
-				meta.links.push({ bucket: bPrefix + "badge" + rule.application_id, key: rule.badge_id, tag: 'hasBadge' });
+				if (magicCheck(callback, err, result, meta)) { cb("err"); }
+				link = { bucket: bPrefix + "badge" + rule.application_id, key: rule.badge_id, tag: "hasBadge" };
+				if (existsLink(meta.links, link)) { cb(); }
+				meta.links.push(link);
 				rc.save(bPrefix + "user" + event.application_id, event.user, result, meta, function (err, result, meta) {
-					if (magicCheck(callback, err, result, meta)) { return; }
-					
+					if (magicCheck(callback, err, result, meta)) { cb("err"); }
+					cb();
 				});
 			});
 		}
-	});
-	callback.success(201, "Successfully created event", event);
+		else { cb(); }
+
+	}, function (err) {
+		if (err) { return; }
+		callback();
+	}
+	);
 }
 
 /**
@@ -256,26 +264,43 @@ exports.createEvent = function (event, callback) {
 	var nbEvents = 0;
 	event.event_id = shortid.generate();
 
-	rc.exists(bPrefix + "eventType" + event.application_id, event.type, function (err, result/*, meta*/) {
-		if (!result) { callback.error(404, "Event Type does not exist"); return; }
-		rc.exists(bPrefix + "user" + event.application_id, event.user, function (err, result/*, meta*/)  {
-			if (!result) { callback.error(404, "User does not exist"); return; }
-
-			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, function (err, result, meta) {
-				if (magicCheck(callback, err, result, meta)) { return; }
-				
-								
-				rc.mapreduce.add({bucket: bPrefix + "event" + event.application_id, "key_filters": [["and", [["tokenize", "-", 1], ["eq", event.type]], [["tokenize", "-", 2], ["eq", event.user]]]]}).map('Riak.mapValuesJson').run(function (err, events) {
-	
-					nbEvents = events.length;
-
-					rc.walk(bPrefix + "eventType" + event.application_id, event.type, [{bucket: bPrefix + "rule" + event.application_id, tag: "_"}], function (err, result/*, meta*/) {
-						if (result.length > 1) { console.log("error 42, ask perdjesk"); }
-						awardBadge(callback, event, nbEvents, result[0]);
-					});
-				});
+	async.series([
+		function (cb) {
+			rc.exists(bPrefix + "eventType" + event.application_id, event.type, function (err, result/*, meta*/) {
+				if (!result) { callback.error(404, "Event Type does not exist"); cb("err"); }
+				cb();
 			});
-		});
+		},
+		function (cb) {
+			rc.exists(bPrefix + "user" + event.application_id, event.user, function (err, result/*, meta*/)  {
+				if (!result) { callback.error(404, "User Type does not exist"); cb("err"); }
+				cb();
+			});
+		},
+		function (cb) {
+			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { cb("er"); }
+				cb();
+			});
+		},
+		function (cb) {
+			rc.mapreduce.add({bucket: bPrefix + "event" + event.application_id, "key_filters": [["and", [["tokenize", "-", 1], ["eq", event.type]], [["tokenize", "-", 2], ["eq", event.user]]]]}).map('Riak.mapValuesJson').run(function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { cb("er"); }
+				nbEvents = result.length;
+				cb();
+			});
+		},
+		function (cb) {
+			rc.walk(bPrefix + "eventType" + event.application_id, event.type, [{bucket: bPrefix + "rule" + event.application_id, tag: "hasRule"}], function (err, result/*, meta*/) {
+				if (result.length > 1) { console.log("error 42, ask perdjesk"); }
+				awardBadge(cb, event, nbEvents, result[0]);
+			});
+			
+		}
+	],
+	function (err) {
+		if (err) { return; }
+		callback.success(201, "Successfully created event", event);
 	});
 };
 
@@ -374,7 +399,7 @@ exports.createRule = function (rule, callback) {
 		function (cb) {
 			rc.get(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, eventtype, meta) {
 				if (magicCheck(callback, err, eventtype, meta)) { cb("err"); }
-				meta.links.push({ bucket: bPrefix + "rule" + rule.application_id, key: rule.rule_id, tag: 'hasRule' });
+				meta.links.push({ bucket: bPrefix + "rule" + rule.application_id, key: rule.rule_id, tag: "hasRule" });
 				rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, meta, function (err, result, meta) {
 					if (magicCheck(callback, err, result, meta)) { cb("err"); }
 					cb();
@@ -388,7 +413,8 @@ exports.createRule = function (rule, callback) {
 			});
 		}
 
-	], function (err) {
+	],
+	function (err) {
 		if (err) { return; }
 		callback.success(201, "Successfully created rule", rule);
 	});
