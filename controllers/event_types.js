@@ -69,3 +69,28 @@ exports.create = function (req, res, next) {
 	name = req.params.name;
 	db.createEventType({'application_id': appid, 'name': name}, responseHandler(res, next));
 };
+
+/**
+ *
+ * @param req the HTTP requests, contains header and body parameters
+ * @param res the callback to which send HTTP response
+ * @param next facilitate restify function chaining
+ */
+exports.update = function (req, res, next) {
+	req.check('appid', '"appid": must be a valid identifier').notNull();
+	req.check('name', '"name": must be a valid string').notNull();
+	req.check('type_id', '"type_id": must be a valid identifier').notNull();
+	var errors = req.validationErrors(),
+		appid,
+		name,
+		type_id;
+	if (errors) {
+		responseHandler(res).error(400, errors);
+		return;
+	}
+
+	appid = req.params.appid;
+	name = req.params.name;
+	type_id = req.params.type_id;
+	db.updateEventType({'application_id': appid, 'name': name, 'type_id': type_id}, responseHandler(res, next));
+};

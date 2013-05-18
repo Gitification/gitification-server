@@ -93,9 +93,9 @@ exports.update = function (req, res, next) {
 	req.check('event_types', '"event_types": must be an array').notNull(); // TODO: Correctly parse each element!
 	var errors = req.validationErrors(),
 		appid,
-		ruleid,
+		rule_id,
 		name,
-		badge,
+		badge_id,
 		event_types;
 	if (errors) {
 		responseHandler(res).error(400, errors);
@@ -103,12 +103,12 @@ exports.update = function (req, res, next) {
 	}
 
 	appid = req.params.appid;
-	ruleid = req.params.ruleid;
+	rule_id = req.params.ruleid;
 	name = req.params.name;
-	badge = req.params.badge_id;
+	badge_id = req.params.badge_id;
 	event_types = req.params.event_types;
 	db.updateRule(
-		{'application_id': appid, 'rule_id': ruleid, 'name': name, 'badge_id': badge, 'event_types': event_types},
+		{'application_id': appid, 'rule_id': rule_id, 'name': name, 'badge_id': badge_id, 'event_types': event_types},
 		responseHandler(res, next)
 	);
 };
@@ -124,13 +124,13 @@ exports.remove = function (req, res, next) {
 	req.check('ruleid', '"ruleid": must be a valid identifier').notNull();
 	var errors = req.validationErrors(),
 		appid,
-		ruleid;
+		rule_id;
 	if (errors) {
 		responseHandler(res).error(400, errors);
 		return;
 	}
 
 	appid = req.params.appid;
-	ruleid = req.params.ruleid;
-	db.deleteRule({'application_id': appid, 'rule_id': ruleid}, responseHandler(res, next));
+	rule_id = req.params.ruleid;
+	db.deleteRule({'application_id': appid, 'rule_id': rule_id}, responseHandler(res, next));
 };
