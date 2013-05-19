@@ -13,6 +13,7 @@
 'use strict';
 
 var mysql = require('mysql');
+var async = require('async');
 var connection = mysql.createConnection({
   host     : 'localhost',
   user     : 'root',
@@ -189,7 +190,8 @@ function check_badge_award_after_event_insert(event, callback) {
 							'(SELECT COUNT(*) FROM event WHERE user_id=? AND type_id=?) ' +
 							'>= rht.threshold ' +
 							'AND r.badge_id NOT IN ' +
-							'(SELECT uhb.badge_id FROM user_has_badge uhb WHERE uhb.user_id = ?)';
+							'(SELECT uhb.badge_id FROM user_has_badge uhb WHERE uhb.user_id = ?) ' +
+							'GROUP BY r.badge_id';
 	params		= [event.type, event.user, event.type, event.user];
 
 	connection.query(sql_query, params, function (err, rows/*, fields*/) {
@@ -197,21 +199,29 @@ function check_badge_award_after_event_insert(event, callback) {
 			throw err;
 		}
 		// rows contain now the list of badges to award for this user
-		rows.forEach(function (row) {
+		console.log(rows);
+		async.forEach(rows, function (row, cb) { //The second argument (callback) is the "task callback" for a specific messageId
 			var badge_id = row.badge_id;
 			sql_query = 'INSERT INTO user_has_badge (user_id, badge_id) ' +
 									'VALUES (?, ?)';
 			params		=	[event.user, badge_id];
 
 			// insert
+			console.log(event.event_id);
 			connection.query(sql_query, params, function (err/*, rows, fields*/) {
 				if (err) {
 					throw err;
 				}
+				cb();
 			});
-		});
-		event.event_id = event.event_id.toString();
-		callback.success(201, "Successfully created event", event);
+    }, function (err) {
+			if (err) {
+				throw err;
+			}
+			//Tell the user about the great success
+			event.event_id = event.event_id.toString();
+			callback.success(201, "Successfully created event", event);
+    });
 	});
 }
 
@@ -238,6 +248,7 @@ exports.createEvent = function (event, callback) {
 				throw err;
 			}
 			event.event_id = rows[0].id;
+			console.log(event);
 			check_badge_award_after_event_insert(event, callback);
 		});
 	});
