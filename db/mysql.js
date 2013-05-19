@@ -34,15 +34,15 @@ exports.findAllApplications = function (callback) {
 		rows.forEach(function (row) {
 			applications.push(
 				{
-					application_id: row.id,
+					application_id: row.id.toString(),
 					site: row.site,
 					callback: row.callback,
 					admin: row.admin,
 					statistics: {
-						user_count: 1,
-						event_count: 1,
-						badge_count: 1,
-						rule_count: 1
+						user_count: "1", // TODO
+						event_count: "1",
+						badge_count: "1",
+						rule_count: "1"
 					}
 				});
 		});
@@ -77,13 +77,13 @@ exports.findLeaderboard = function (app, callback) {
 			applications.push(
 				{
 					position: pos,
-					user_id: row.id,
+					user_id: row.id.toString(),
 					login: row.login,
 					firstname: row.firstname,
 					lastname: row.lastname,
 					email: row.email,
 					statistics: {
-						badge_count: row.badge_cnt
+						badge_count: row.badge_cnt.toString()
 					}
 				});
 
@@ -127,8 +127,8 @@ exports.createApplication = function (input, callback) {
 			if (err) {
 				throw err;
 			}
-			app.application_id = rows[0].id;
-			payload = {'application_id': "" + app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"};
+			app.application_id = rows[0].id.toString();
+			payload = {'application_id': app.application_id, 'api_key': "api_key", 'secret_key': "secret_key"};
 			callback.success(201, "Successfully registered.", payload);
 		});
 	});
@@ -167,7 +167,7 @@ exports.createUser = function (user, callback) {
 				throw err;
 			}
 			user.user_id = rows[0].id;
-			payload.user_id = user.user_id;
+			payload.user_id = user.user_id.toString();
 			callback.success(201, "Successfully created user", payload);
 		});
 	});
@@ -191,7 +191,6 @@ function check_badge_award_after_event_insert(event, callback) {
 							'AND r.badge_id NOT IN ' +
 							'(SELECT uhb.badge_id FROM user_has_badge uhb WHERE uhb.user_id = ?)';
 	params		= [event.type, event.user, event.type, event.user];
-	console.log(params);
 
 	connection.query(sql_query, params, function (err, rows/*, fields*/) {
 		if (err) {
@@ -209,9 +208,9 @@ function check_badge_award_after_event_insert(event, callback) {
 				if (err) {
 					throw err;
 				}
-				console.log('done');
 			});
 		});
+		event.event_id = event.event_id.toString();
 		callback.success(201, "Successfully created event", event);
 	});
 }
@@ -270,7 +269,7 @@ exports.createEventType = function (eventtype, callback) {
 			if (err) {
 				throw err;
 			}
-			eventtype.type_id = rows[0].id;
+			eventtype.type_id = rows[0].id.toString();
 			callback.success(201, "Successfully created event", eventtype);
 		});
 	});
@@ -293,8 +292,6 @@ exports.createRule = function (rule, callback) {
 							'VALUES (?, ?, ?)';
 	params		=	[rule.application_id, rule.badge_id, rule.name];
 
-	console.log(params);
-
 	// create rule
 	connection.query(sql_query, params, function (err/*, rows, fields*/) {
 		if (err) {
@@ -312,12 +309,13 @@ exports.createRule = function (rule, callback) {
 			sql_query = 'INSERT INTO rule_has_type (rule_id, type_id, threshold)' +
 									'VALUES (?, ?, ?)';
 			params		=	[rule.rule_id, rule.event_types[0].event_type, rule.event_types[0].threshold];
-			console.log(params);
 
 			connection.query(sql_query, params, function (err/*, rows, fields*/) {
 				if (err) {
 					throw err;
 				}
+				// convert toString before sending to client
+				rule.rule_id = rule.rule_id.toString();
 				callback.success(201, "Successfully created rule", rule);
 			});
 		});
@@ -352,7 +350,8 @@ exports.createBadge = function (badge, callback) {
 			if (err) {
 				throw err;
 			}
-			badge.badge_id = rows[0].id;
+			// convert to string before sending to client
+			badge.badge_id = rows[0].id.toString();
 			callback.success(201, "Successfully created badge", badge);
 		});
 	});
