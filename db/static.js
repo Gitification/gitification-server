@@ -263,6 +263,16 @@ exports.createEventType = function (eventtype, callback) {
 	callback.success(201, "Successfully created event", eventtype);
 };
 
+/**
+ * Updates event type
+ * @param eventtype
+ * @param callback
+ */
+exports.updateEventType = function (eventtype, callback) {
+	callback.success(200, "Successfully created event", eventtype);
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Rules
 ////////////////////////////////////////////////////////////////////////////////////
@@ -277,7 +287,7 @@ exports.findAllRules = function (app, callback) {
 		{
 			rule_id: 1,
 			name: "sample rule",
-			badge: 1,
+			badge_id: 1,
 			event_types: [
 				{
 					event_type: 1,
@@ -297,7 +307,7 @@ exports.findRuleById = function (rule, callback) {
 	callback.send({
 		rule_id: rule.ruleid,
 		name: "sample rule",
-		badge: 1,
+		badge_id: 1,
 		event_types: [
 			{
 				event_type: 1,

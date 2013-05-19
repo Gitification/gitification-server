@@ -369,7 +369,18 @@ exports.createEventType = function (eventtype, callback) {
 		if (magicCheck(callback, err, result, meta)) { return; }
 		callback.success(201, "Successfully created event", eventtype);
 	});
-	
+};
+
+/**
+ * Updates event type
+ * @param eventtype
+ * @param callback
+ */
+exports.updateEventType = function (eventtype, callback) {
+	rc.save(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, eventtype, function (err, result, meta) {
+		if (magicCheck(callback, err, result, meta)) { return; }
+		callback.success(200, "Event type was updated", eventtype);
+	});
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

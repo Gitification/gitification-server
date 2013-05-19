@@ -53,4 +53,23 @@ suite.discuss('When asking our API')
       .undiscuss()
     .undiscuss()
 	.undiscuss()
+	//// POST ////
+	.discuss('to update an event type')
+		.use('localhost', 8080)
+		.setHeader('Content-Type', 'application/json')
+		.put(server.prefix + '/applications/1/events/types/1', {
+	"application_id": "1",
+	"name": "dblutype",
+	"type_id": "1"
+})
+		.expect(200) // TODO add content
+	.discuss('with not all parameters')
+	.use('localhost', 8080)
+		.setHeader('Content-Type', 'application/json')
+		.put(server.prefix + '/applications/1/events/types/1', {
+	"application_id": "1",
+	"name": "dblutype"
+})
+		.expect(400) // TODO add content
+	.undiscuss()
 	.export(module);
