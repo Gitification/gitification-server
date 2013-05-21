@@ -40,6 +40,7 @@
     "rewire":">=1.1.2",
     "api-easy": "0.2.x",
     "validator": "1.1.0",
-    "async": "0.2.x"
+    "async": "0.2.x",
+    "mysql": "2.0.0-alpha8"
   }
 }
