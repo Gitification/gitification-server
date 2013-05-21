@@ -109,7 +109,8 @@ exports.findLeaderboard = function (app, callback) {
 		if (result.length === 0) { callback.send(board); }
 		var queue = async.queue(function (item, cbQueue) {
 			var cbWalk = cbQueue;
-			rc.walk(bPrefix + "user" + app.application_id, item.user_id, [{bucket: bPrefix + "badge" + item.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
+			rc.walk(bPrefix + "user" + app.application_id, item.user_id, [{bucket: bPrefix + "badge" + item.application_id, tag: "hasBadge"}], function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { return cbWalk(); }
 				item.statistics = {};
 				item.statistics.badge_count = result[0].length;
 				board.push(item);
@@ -150,7 +151,6 @@ exports.findAllUsers = function (app, callback) {
 exports.findUserById = function (user, callback) {
 	rc.get(bPrefix + "user" + user.application_id, user.user_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
-		console.log(meta);
 		callback.send(result);
 	});
 };
@@ -165,9 +165,8 @@ exports.findUserBadgesByUserId = function (user, callback) {
 	payload.user_id = user.user_id;
 	payload.badges_list = [];
 
-	console.log("bs");
-	rc.walk(bPrefix + "user" + user.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result/*, meta*/) {
-		console.log("gg");
+	rc.walk(bPrefix + "user" + user.application_id, user.user_id, [{bucket: bPrefix + "badge" + user.application_id, tag: "hasBadge"}], function (err, result, meta) {
+		if (magicCheck(callback, err, result, meta)) { return; }
 		if (result.length > 1) { console.log("error 42, ask perdjesk"); }
 		if (result[0].length === 0) { callback.send(payload); }
 		result[0].forEach(function (entry) {
@@ -261,6 +260,7 @@ function awardBadge(callback, event, nbEvents, rules) {
 	async.eachSeries(rules, function (item, cb) {
 		rule = item.data;
 		if (nbEvents >= rule.event_types[0].threshold) {
+			
 			rc.get(bPrefix + "user" + event.application_id, event.user, function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return cb("err"); }
 				link = { bucket: bPrefix + "badge" + rule.application_id, key: rule.badge_id, tag: "hasBadge" };
@@ -292,32 +292,35 @@ exports.createEvent = function (event, callback) {
 	
 	async.series([
 		function (cb) {
-			rc.exists(bPrefix + "eventType" + event.application_id, event.type, function (err, result/*, meta*/) {
+			rc.exists(bPrefix + "eventType" + event.application_id, event.type, function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				if (!result) { callback.error(404, "Event Type does not exist"); return cb("err"); }
 				cb();
 			});
 		},
 		function (cb) {
-			rc.exists(bPrefix + "user" + event.application_id, event.user, function (err, result/*, meta*/)  {
+			rc.exists(bPrefix + "user" + event.application_id, event.user, function (err, result, meta)  {
+				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				if (!result) { callback.error(404, "User Type does not exist"); return  cb("err"); }
 				cb();
 			});
 		},
 		function (cb) {
-			rc.save(bPrefix + "event" + event.application_id, event.type + "-" + event.user + "-" + event.event_id, event, function (err, result, meta) {
+			rc.save(bPrefix + "event" + event.application_id, event.type + "&" + event.user + "&" + event.event_id, event, function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				cb();
 			});
 		},
 		function (cb) {
-			rc.mapreduce.add({bucket: bPrefix + "event" + event.application_id, "key_filters": [["and", [["tokenize", "-", 1], ["eq", event.type]], [["tokenize", "-", 2], ["eq", event.user]]]]}).map('Riak.mapValuesJson').run(function (err, result, meta) {
+			rc.mapreduce.add({bucket: bPrefix + "event" + event.application_id, "key_filters": [["and", [["tokenize", "&", 1], ["eq", event.type]], [["tokenize", "&", 2], ["eq", event.user]]]]}).map('Riak.mapValuesJson').run(function (err, result, meta) {
 				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				nbEvents = result.length;
 				cb();
 			});
 		},
 		function (cb) {
-			rc.walk(bPrefix + "eventType" + event.application_id, event.type, [{bucket: bPrefix + "rule" + event.application_id, tag: "hasRule"}], function (err, result/*, meta*/) {
+			rc.walk(bPrefix + "eventType" + event.application_id, event.type, [{bucket: bPrefix + "rule" + event.application_id, tag: "hasRule"}], function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				if (result.length > 1) { console.log("error 42, ask perdjesk"); }
 				awardBadge(cb, event, nbEvents, result[0]);
 			});
@@ -353,7 +356,6 @@ exports.findAllEventTypes = function (app, callback) {
 exports.findEventTypeById = function (eventtype, callback) {
 	rc.get(bPrefix + "eventType" + eventtype.application_id, eventtype.type_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
-		console.log(meta);
 		callback.send(result);
 	});
 };
@@ -407,7 +409,6 @@ exports.findAllRules = function (app, callback) {
 exports.findRuleById = function (rule, callback) {
 	rc.get(bPrefix + "rule" + rule.application_id, rule.rule_id, function (err, result, meta) {
 		if (magicCheck(callback, err, result, meta)) { return; }
-		console.log(meta);
 		callback.send(result);
 	});
 };
@@ -422,13 +423,15 @@ exports.createRule = function (rule, callback) {
 
 	async.series([
 		function (cb) {
-			rc.exists(bPrefix + "badge" + rule.application_id, rule.badge_id, function (err, result/*, meta*/) {
+			rc.exists(bPrefix + "badge" + rule.application_id, rule.badge_id, function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				if (!result) { callback.error(404, "Badge does not exist"); return cb("err"); }
 				cb();
 			});
 		},
 		function (cb) {
-			rc.exists(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, result/*, meta*/) {
+			rc.exists(bPrefix + "eventType" + rule.application_id, rule.event_types[0].event_type, function (err, result, meta) {
+				if (magicCheck(callback, err, result, meta)) { return cb("er"); }
 				if (!result) { callback.error(404, "Event type does not exist"); return cb("err"); }
 				cb();
 			});
