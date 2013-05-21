@@ -144,6 +144,36 @@ exports.createApplication = function (input, callback) {
 //////////////////////////////////////////////////////////////////////////////////////
 
 
+/**
+ *
+ * @param user
+ * @param callback
+ */
+exports.findUserBadgesByUserId = function (user, callback) {
+	var payload = {}, i = 0, sql_query, params;
+	payload.user_id = user.user_id;
+	payload.badges_list = [];
+
+	sql_query = 'SELECT uhb.badge_id as badge_id, b.name as name, b.icon as icon FROM user_has_badge uhb ' +
+							'JOIN badge b ON uhb.badge_id = b.id ' +
+							'WHERE uhb.user_id = ?';
+
+	params		= [user.user_id];
+
+	connection.query(sql_query, params, function (err, rows/*, fields*/) {
+		if (err) {
+			throw err;
+		}
+
+		if (rows.length === 0) { callback.send(payload); }
+		rows.forEach(function (entry) {
+			payload.badges_list[i] = entry;
+			i++;
+		});
+		callback.send(payload);
+	});
+};
+
 
 /**
  *
