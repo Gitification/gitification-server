@@ -15,11 +15,14 @@ var shortid = require('shortid');
 var bPrefix = "gitification_"; // set a prefix for all the bucket used by this application
 var async = require('async');
 
-function magicCheck(callback, err, result, meta) {
+function magicCheck(callback, err/*, result, meta*/) {
 	if (err !== null) {
 		console.log("error riak");
 		console.log(err);
-		callback.error(err.statusCode, meta);
+		if (typeof err.statusCode === "undefined") {
+			err.statusCode = 500;
+		}
+		callback.error(err.statusCode, err);
 		return true;
 	}
 	return false;
