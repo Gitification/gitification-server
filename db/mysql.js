@@ -175,6 +175,16 @@ exports.findUserBadgesByUserId = function (user, callback) {
 };
 
 
+exports.findAllUsers = function (app, callback) {
+	connection.query('SELECT * FROM user WHERE user.application_id =' + app.application_id, function (err, rows/*, fields*/) {
+		if (err) {
+			throw err;
+		}
+
+		callback.send(rows);
+	});
+};
+
 /**
  *
  * @param user
